@@ -21,6 +21,7 @@ var tikzSubGridSelect;
 var tikzStartEndPointsSelect;
 var tikzCubicLabelSelect;
 var tikzTangentsSelect;
+var tikzTangentsColorsSelect;
 var textBox
 
 var cubicCanvasWidth=1200;
@@ -33,6 +34,8 @@ var invPrecisionSnap=10;
 var pixelSnap=precisionSnap * pixelsUnit;
 
 var xmin,xmax,ymin,ymax;
+
+var colors = ["DarkBlue","DarkRed","DarkGreen","OrangeRed","MediumVioletRed"]
 
 //
 // CANVAS
@@ -226,7 +229,14 @@ function printTikzCode() {
 	res = res + ";";
 	// Tangents
 	if ( tikzTangentsSelect.checked ) {
-		res = res + "\n\t%\n\t% Tangentes";
+		if ( tikzPreambleSelect.checked ) {
+			var space = "\t";
+			res = res + "\n\t%";
+		}
+		else {
+			var space = "";
+		}
+		res = res + "\n"+space+"% Tangentes";
 		for(var j=3;j<cubicPoints.length-2;j=j+3) {
 			var p0 = cubicPoints[j];
 			var p1 = cubicPoints[j+1]
@@ -236,17 +246,22 @@ function printTikzCode() {
 				a1 = -1 * a1;
 				a2 = -1 * a2;
 			}
-			var b = convertY(p1.y) - a1 / a2 * convertX(p1.x);
-			console.log(a1)
 			a1 = Math.round(a1 * invPrecisionSnap ) / invPrecisionSnap;
 			a2 = Math.round(a2 * invPrecisionSnap) / invPrecisionSnap;
-			console.log(a1)
-			b = Math.round(b * 1000)/1000;
-			res = res + "\n\t&#92draw[domain=&#92bezierXmin:&#92bezierXmax,line width=1pt] plot (&#92x,{"+a1.toString()+"/"+a2.toString()+"*&#92x";
-			if ( b > 0 ) {
-				res = res + "+";
+			if ( a2 != 0 ) {
+				var b = convertY(p1.y) - a1 / a2 * convertX(p1.x);
+				b = Math.round(b * 1000)/1000;
+				res = res + "\n"+space+"&#92draw[domain=&#92bezierXmin:&#92bezierXmax,line width=1pt";
+				if ( tikzTangentsColorsSelect.checked ) {
+					var col = colors[(j/3-1) % colors.length];
+					res = res + ","+col;
+				}
+				res = res + "] plot (&#92x,{"+a1.toString()+"/"+a2.toString()+"*&#92x";
+				if ( b > 0 ) {
+					res = res + "+";
+				}
+				res = res + b.toString()+"});";
 			}
-			res = res + b.toString()+"});";
 		}
 	}
 	// End of the environement if selected
@@ -459,6 +474,7 @@ function init() {
     cubicHideSelect = document.getElementById("cubicHide");
     cubicHideSelect.checked = false;
     cubicHideSelect.onclick = function() { cubicDraw(); };
+	
 	tikzPreambleSelect = document.getElementById("tikzPreamble");
 	tikzPreambleSelect.checked = true;
 	tikzPreambleSelect.onclick = function() { printTikzCode(); };
@@ -477,6 +493,9 @@ function init() {
 	tikzTangentsSelect = document.getElementById("tikzTangents");
 	tikzTangentsSelect.checked = false;
 	tikzTangentsSelect.onclick = function() { printTikzCode(); };
+	tikzTangentsColorsSelect = document.getElementById("tikzTangentsColors");
+	tikzTangentsColorsSelect.checked = true;
+	tikzTangentsColorsSelect.onclick = function() { printTikzCode(); };
 	
 	textBox = document.getElementById("coordinates");
     cubicPoints = [
@@ -514,7 +533,8 @@ Please use a newer version or a different browser.</p>
 <p id="message" style="font-weight: bold"></p>
 
 <p>
-Cet outil permet de créer des courbes sur l'interface graphique ci-dessous puis de les exporter en code tikz pour une intégration LaTeX. (Un clic droit -> Enregistrer l'image sous ou une capture d'écran sont aussi envisageables).<br>
+Cet outil permet de créer des courbes sur l'interface graphique ci-dessous puis de les exporter en code tikz pour une intégration LaTeX. Le package tkz-base est nécessaire pour créer le repère.<br>
+Un clic droit -> Enregistrer l'image sous ou une capture d'écran sont aussi envisageables pour une utilisation avec Word.<br>
 Pour insérer ou supprimer un point, il suffit de double-cliquer.
 <ul>
 <li> Le mode une décimale arrondit les coordonnées des points pour faciliter l'alignement. </li>
@@ -551,12 +571,13 @@ Pour insérer ou supprimer un point, il suffit de double-cliquer.
 </p>
 
 <p style="font-weight: bold">
-<input type="checkbox" id="tikzTangents"> <label for="tikzTangents" style="margin-right:1cm">Afficher les tangentes (non verticales)</label>
+<input type="checkbox" id="tikzTangents"> <label for="tikzTangents" style="margin-right:1cm">Afficher les tangentes (non verticales uniquement)</label>
+<input type="checkbox" id="tikzTangentsColors"> <label for="tikzTangentsColors" style="margin-right:1cm">Colorer les tangentes</label>
 </p>
 
 <textarea readonly id="coordinates" rows="30" style="width:100%; background-color:white; padding:5px; border-color:black; border:1px solid; font-size: 12px;"> </textarea>
 
-<p style="font-style=italic; margin-top:1cm;"> v1.1 - Basé sur <a href="https://math.hws.edu/eck/cs424/notes2013/canvas/bezier.html">Bezier Curve Demos</a> - Intégration Tikz et ajout de fonctionnalités par moi </p>
+<p style="font-style=italic; margin-top:1cm;"> v1.1b - Basé sur <a href="https://math.hws.edu/eck/cs424/notes2013/canvas/bezier.html">Bezier Curve Demos</a> - Intégration Tikz et ajout de fonctionnalités par moi </p>
 
 </body>
 </html>
