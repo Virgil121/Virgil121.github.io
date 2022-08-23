@@ -24,12 +24,12 @@ var tikzTangentsSelect;
 var tikzTangentsColorsSelect;
 var textBox
 
-var cubicCanvasWidth=1190;
+var cubicCanvasWidth=1200;
 var cubicCanvasHeight=840;
-var pixelsUnit=70; // Espacement graduations
+var pixelsUnit=60; // Espacement graduations
 var subUnits=2; // Sous graduation
 var p = 0; // Padding
-var precisionSnap=0.1;
+var precisionSnap=0.25;
 var invPrecisionSnap=10;
 var pixelSnap=precisionSnap * pixelsUnit;
 
@@ -427,8 +427,10 @@ function doCubicMouseMove(evt) {
 	}
 	else {
 		// Snap the point to align it with the precision
-		cubicPoints[dragPointIndex].x = pixelSnap*Math.round(cubicPoints[dragPointIndex].x/pixelSnap);
-		cubicPoints[dragPointIndex].y = pixelSnap*Math.round(cubicPoints[dragPointIndex].y/pixelSnap);
+		if ( precisionSelect.checked ) {
+			cubicPoints[dragPointIndex].x = pixelSnap*Math.round(cubicPoints[dragPointIndex].x/pixelSnap);
+			cubicPoints[dragPointIndex].y = pixelSnap*Math.round(cubicPoints[dragPointIndex].y/pixelSnap);
+		}
 		cubicPoints[dragPointIndex].x += offsetX;
 		cubicPoints[dragPointIndex].y += offsetY;
 		if ( dragPointIndex % 3 == 0) {

@@ -427,8 +427,10 @@ function doCubicMouseMove(evt) {
 	}
 	else {
 		// Snap the point to align it with the precision
-		cubicPoints[dragPointIndex].x = pixelSnap*Math.round(cubicPoints[dragPointIndex].x/pixelSnap);
-		cubicPoints[dragPointIndex].y = pixelSnap*Math.round(cubicPoints[dragPointIndex].y/pixelSnap);
+		if ( precisionSelect.checked ) {
+			cubicPoints[dragPointIndex].x = pixelSnap*Math.round(cubicPoints[dragPointIndex].x/pixelSnap);
+			cubicPoints[dragPointIndex].y = pixelSnap*Math.round(cubicPoints[dragPointIndex].y/pixelSnap);
+		}
 		cubicPoints[dragPointIndex].x += offsetX;
 		cubicPoints[dragPointIndex].y += offsetY;
 		if ( dragPointIndex % 3 == 0) {
