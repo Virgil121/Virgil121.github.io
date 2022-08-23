@@ -1,0 +1,884 @@
+This is LuaHBTeX, Version 1.15.0 (MiKTeX 22.3) (format=lualatex 2022.5.26)  23 AUG 2022 21:35
+ system commands enabled.
+**exemples.tex
+(./exemples.tex
+LaTeX2e <2021-11-15> patch level 1
+Lua module: luaotfload 2022-03-18 3.21 Lua based OpenType font support
+Lua module: lualibs 2021-05-20 2.74 ConTeXt Lua standard libraries.
+Lua module: lualibs-extended 2021-05-20 2.74 ConTeXt Lua libraries -- extended c
+ollection.
+luaotfload | conf : Root cache directory is "C:/Users/Virgil/AppData/Local/MiKTe
+X/luatex-cache/generic/names".
+luaotfload | init : Loading fontloader "fontloader-2022-02-24.lua" from kpse-res
+olved path "C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/luatex/luaotfload/
+fontloader-2022-02-24.lua".
+Lua-only attribute luaotfload@noligature = 1
+luaotfload | init : Context OpenType loader version 3.119
+Inserting `luaotfload.node_processor' at position 1 in `pre_linebreak_filter'.
+Inserting `luaotfload.node_processor' at position 1 in `hpack_filter'.
+Inserting `luaotfload.glyph_stream' at position 1 in `glyph_stream_provider'.
+Inserting `luaotfload.define_font' at position 1 in `define_font'.
+Lua-only attribute luaotfload_color_attribute = 2
+luaotfload | conf : Root cache directory is "C:/Users/Virgil/AppData/Local/MiKTe
+X/luatex-cache/generic/names".
+Inserting `luaotfload.harf.strip_prefix' at position 1 in `find_opentype_file'.
+Inserting `luaotfload.harf.strip_prefix' at position 1 in `find_truetype_file'.
+Removing  `luaotfload.glyph_stream' from `glyph_stream_provider'.
+Inserting `luaotfload.harf.glyphstream' at position 1 in `glyph_stream_provider'
+.
+Inserting `luaotfload.harf.finalize_vlist' at position 1 in `post_linebreak_filt
+er'.
+Inserting `luaotfload.harf.finalize_hlist' at position 2 in `hpack_filter'.
+Inserting `luaotfload.cleanup_files' at position 1 in `wrapup_run'.
+Inserting `luaotfload.harf.finalize_unicode' at position 1 in `finish_pdffile'.
+Inserting `luaotfload.glyphinfo' at position 1 in `glyph_info'.
+Lua-only attribute luaotfload.letterspace_done = 3
+Inserting `luaotfload.aux.set_sscale_dimens' at position 1 in `luaotfload.patch_
+font'.
+Inserting `luaotfload.aux.set_font_index' at position 2 in `luaotfload.patch_fon
+t'.
+Inserting `luaotfload.aux.patch_cambria_domh' at position 3 in `luaotfload.patch
+_font'.
+Inserting `luaotfload.aux.fixup_fontdata' at position 1 in `luaotfload.patch_fon
+t_unsafe'.
+Inserting `luaotfload.aux.set_capheight' at position 4 in `luaotfload.patch_font
+'.
+Inserting `luaotfload.aux.set_xheight' at position 5 in `luaotfload.patch_font'.
+Inserting `luaotfload.rewrite_fontname' at position 6 in `luaotfload.patch_font'
+. L3 programming layer <2022-02-24>
+Inserting `tracingstacklevels' at position 1 in `input_level_string'.
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/latex/base/article.cls
+Document Class: article 2021/10/04 v1.4n Standard LaTeX document class
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/latex/base/size12.clo
+File: size12.clo 2021/10/04 v1.4n Standard LaTeX file (size option)
+luaotfload | db : Font names database loaded from C:/Users/Virgil/AppData/Local/
+MiKTeX/luatex-cache/generic/names/luaotfload-names.luc.gz)
+\c@part=\count183
+\c@section=\count184
+\c@subsection=\count185
+\c@subsubsection=\count186
+\c@paragraph=\count187
+\c@subparagraph=\count188
+\c@figure=\count189
+\c@table=\count190
+\abovecaptionskip=\skip47
+\belowcaptionskip=\skip48
+\bibindent=\dimen137
+)
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/latex/geometry/geometry.sty
+Package: geometry 2020/01/02 v5.9 Page Geometry
+
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/latex/graphics/keyval.sty
+Package: keyval 2014/10/28 v1.15 key=value parser (DPC)
+\KV@toks@=\toks16
+)
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/iftex/ifvtex.sty
+Package: ifvtex 2019/10/25 v1.7 ifvtex legacy package. Use iftex instead.
+
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/iftex/iftex.sty
+Package: iftex 2022/02/03 v1.0f TeX engine tests
+))
+\Gm@cnth=\count191
+\Gm@cntv=\count192
+\c@Gm@tempcnt=\count193
+\Gm@bindingoffset=\dimen138
+\Gm@wd@mp=\dimen139
+\Gm@odd@mp=\dimen140
+\Gm@even@mp=\dimen141
+\Gm@layoutwidth=\dimen142
+\Gm@layoutheight=\dimen143
+\Gm@layouthoffset=\dimen144
+\Gm@layoutvoffset=\dimen145
+\Gm@dimlist=\toks17
+
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/latex/geometry/geometry.cfg))
+
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/latex/jknappen/mathrsfs.sty
+Package: mathrsfs 1996/01/01 Math RSFS package v1.0 (jk)
+\symrsfs=\mathgroup4
+) (C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/latex/xcolor/xcolor.sty
+Package: xcolor 2021/10/31 v2.13 LaTeX color extensions (UK)
+
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/latex/graphics-cfg/color.cfg
+File: color.cfg 2016/01/02 v1.6 sample color configuration
+)
+Package xcolor Info: Driver file: luatex.def on input line 227.
+
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/latex/graphics-def/luatex.de
+f
+File: luatex.def 2021/06/01 v1.2c Graphics/color driver for luatex
+)
+Package xcolor Info: Model `cmy' substituted by `cmy0' on input line 1352.
+Package xcolor Info: Model `hsb' substituted by `rgb' on input line 1356.
+Package xcolor Info: Model `RGB' extended on input line 1368.
+Package xcolor Info: Model `HTML' substituted by `rgb' on input line 1370.
+Package xcolor Info: Model `Hsb' substituted by `hsb' on input line 1371.
+Package xcolor Info: Model `tHsb' substituted by `hsb' on input line 1372.
+Package xcolor Info: Model `HSB' substituted by `hsb' on input line 1373.
+Package xcolor Info: Model `Gray' substituted by `gray' on input line 1374.
+Package xcolor Info: Model `wave' substituted by `hsb' on input line 1375.
+ (C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/latex/xcolor/svgnam.def
+File: svgnam.def 2021/10/31 v2.13 Predefined colors according to SVG 1.1 (UK)
+))
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/latex/pgf/frontendlayer/tikz
+.sty
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/latex/pgf/basiclayer/pgf.sty
+
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/latex/pgf/utilities/pgfrcs.s
+ty
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/utilities/pgfuti
+l-common.tex
+\pgfutil@everybye=\toks18
+\pgfutil@tempdima=\dimen146
+\pgfutil@tempdimb=\dimen147
+
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/utilities/pgfuti
+l-common-lists.tex))
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/utilities/pgfuti
+l-latex.def
+\pgfutil@abb=\box50
+)
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/utilities/pgfrcs
+.code.tex
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/pgf.revision.tex
+)
+Package: pgfrcs 2021/05/15 v3.1.9a (3.1.9a)
+))
+Package: pgf 2021/05/15 v3.1.9a (3.1.9a)
+
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/latex/pgf/basiclayer/pgfcore
+.sty
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/latex/graphics/graphicx.sty
+Package: graphicx 2021/09/16 v1.2d Enhanced LaTeX Graphics (DPC,SPQR)
+
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/latex/graphics/graphics.sty
+Package: graphics 2021/03/04 v1.4d Standard LaTeX Graphics (DPC,SPQR)
+
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/latex/graphics/trig.sty
+Package: trig 2021/08/11 v1.11 sin cos tan (DPC)
+)
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/latex/graphics-cfg/graphics.
+cfg
+File: graphics.cfg 2016/06/04 v1.11 sample graphics configuration
+)
+Package graphics Info: Driver file: luatex.def on input line 107.
+)
+\Gin@req@height=\dimen148
+\Gin@req@width=\dimen149
+)
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/latex/pgf/systemlayer/pgfsys
+.sty
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/systemlayer/pgfs
+ys.code.tex
+Package: pgfsys 2021/05/15 v3.1.9a (3.1.9a)
+
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/utilities/pgfkey
+s.code.tex
+\pgfkeys@pathtoks=\toks19
+\pgfkeys@temptoks=\toks20
+
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/utilities/pgfkey
+sfiltered.code.tex
+\pgfkeys@tmptoks=\toks21
+))
+\pgf@x=\dimen150
+\pgf@y=\dimen151
+\pgf@xa=\dimen152
+\pgf@ya=\dimen153
+\pgf@xb=\dimen154
+\pgf@yb=\dimen155
+\pgf@xc=\dimen156
+\pgf@yc=\dimen157
+\pgf@xd=\dimen158
+\pgf@yd=\dimen159
+\w@pgf@writea=\write3
+\r@pgf@reada=\read2
+\c@pgf@counta=\count194
+\c@pgf@countb=\count195
+\c@pgf@countc=\count196
+\c@pgf@countd=\count197
+\t@pgf@toka=\toks22
+\t@pgf@tokb=\toks23
+\t@pgf@tokc=\toks24
+\pgf@sys@id@count=\count198
+
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/systemlayer/pgf.
+cfg
+File: pgf.cfg 2021/05/15 v3.1.9a (3.1.9a)
+)
+Driver file for pgf: pgfsys-luatex.def
+
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/systemlayer/pgfs
+ys-luatex.def
+File: pgfsys-luatex.def 2021/05/15 v3.1.9a (3.1.9a)
+
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/systemlayer/pgfs
+ys-common-pdf.def
+File: pgfsys-common-pdf.def 2021/05/15 v3.1.9a (3.1.9a)
+)))
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/systemlayer/pgfs
+yssoftpath.code.tex
+File: pgfsyssoftpath.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+\pgfsyssoftpath@smallbuffer@items=\count199
+\pgfsyssoftpath@bigbuffer@items=\count266
+)
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/systemlayer/pgfs
+ysprotocol.code.tex
+File: pgfsysprotocol.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+))
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/basiclayer/pgfco
+re.code.tex
+Package: pgfcore 2021/05/15 v3.1.9a (3.1.9a)
+
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/math/pgfmath.cod
+e.tex
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/math/pgfmathcalc
+.code.tex
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/math/pgfmathutil
+.code.tex)
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/math/pgfmathpars
+er.code.tex
+\pgfmath@dimen=\dimen160
+\pgfmath@count=\count267
+\pgfmath@box=\box51
+\pgfmath@toks=\toks25
+\pgfmath@stack@operand=\toks26
+\pgfmath@stack@operation=\toks27
+)
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/math/pgfmathfunc
+tions.code.tex
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/math/pgfmathfunc
+tions.basic.code.tex)
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/math/pgfmathfunc
+tions.trigonometric.code.tex)
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/math/pgfmathfunc
+tions.random.code.tex)
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/math/pgfmathfunc
+tions.comparison.code.tex)
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/math/pgfmathfunc
+tions.base.code.tex)
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/math/pgfmathfunc
+tions.round.code.tex)
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/math/pgfmathfunc
+tions.misc.code.tex)
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/math/pgfmathfunc
+tions.integerarithmetics.code.tex)))
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/math/pgfmathfloa
+t.code.tex
+\c@pgfmathroundto@lastzeros=\count268
+))
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/math/pgfint.code
+.tex)
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/basiclayer/pgfco
+repoints.code.tex
+File: pgfcorepoints.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+\pgf@picminx=\dimen161
+\pgf@picmaxx=\dimen162
+\pgf@picminy=\dimen163
+\pgf@picmaxy=\dimen164
+\pgf@pathminx=\dimen165
+\pgf@pathmaxx=\dimen166
+\pgf@pathminy=\dimen167
+\pgf@pathmaxy=\dimen168
+\pgf@xx=\dimen169
+\pgf@xy=\dimen170
+\pgf@yx=\dimen171
+\pgf@yy=\dimen172
+\pgf@zx=\dimen173
+\pgf@zy=\dimen174
+)
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/basiclayer/pgfco
+repathconstruct.code.tex
+File: pgfcorepathconstruct.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+\pgf@path@lastx=\dimen175
+\pgf@path@lasty=\dimen176
+)
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/basiclayer/pgfco
+repathusage.code.tex
+File: pgfcorepathusage.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+\pgf@shorten@end@additional=\dimen177
+\pgf@shorten@start@additional=\dimen178
+)
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/basiclayer/pgfco
+rescopes.code.tex
+File: pgfcorescopes.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+\pgfpic=\box52
+\pgf@hbox=\box53
+\pgf@layerbox@main=\box54
+\pgf@picture@serial@count=\count269
+)
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/basiclayer/pgfco
+regraphicstate.code.tex
+File: pgfcoregraphicstate.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+\pgflinewidth=\dimen179
+)
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/basiclayer/pgfco
+retransformations.code.tex
+File: pgfcoretransformations.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+\pgf@pt@x=\dimen180
+\pgf@pt@y=\dimen181
+\pgf@pt@temp=\dimen182
+)
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/basiclayer/pgfco
+requick.code.tex
+File: pgfcorequick.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+)
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/basiclayer/pgfco
+reobjects.code.tex
+File: pgfcoreobjects.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+)
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/basiclayer/pgfco
+repathprocessing.code.tex
+File: pgfcorepathprocessing.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+)
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/basiclayer/pgfco
+rearrows.code.tex
+File: pgfcorearrows.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+\pgfarrowsep=\dimen183
+)
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/basiclayer/pgfco
+reshade.code.tex
+File: pgfcoreshade.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+\pgf@max=\dimen184
+\pgf@sys@shading@range@num=\count270
+\pgf@shadingcount=\count271
+)
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/basiclayer/pgfco
+reimage.code.tex
+File: pgfcoreimage.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/basiclayer/pgfco
+reexternal.code.tex
+File: pgfcoreexternal.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+\pgfexternal@startupbox=\box55
+))
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/basiclayer/pgfco
+relayers.code.tex
+File: pgfcorelayers.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+)
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/basiclayer/pgfco
+retransparency.code.tex
+File: pgfcoretransparency.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+)
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/basiclayer/pgfco
+repatterns.code.tex
+File: pgfcorepatterns.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+)
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/basiclayer/pgfco
+rerdf.code.tex
+File: pgfcorerdf.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+)))
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/modules/pgfmodul
+eshapes.code.tex
+File: pgfmoduleshapes.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+\pgfnodeparttextbox=\box56
+)
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/modules/pgfmodul
+eplot.code.tex
+File: pgfmoduleplot.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+)
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/latex/pgf/compatibility/pgfc
+omp-version-0-65.sty
+Package: pgfcomp-version-0-65 2021/05/15 v3.1.9a (3.1.9a)
+\pgf@nodesepstart=\dimen185
+\pgf@nodesepend=\dimen186
+)
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/latex/pgf/compatibility/pgfc
+omp-version-1-18.sty
+Package: pgfcomp-version-1-18 2021/05/15 v3.1.9a (3.1.9a)
+))
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/latex/pgf/utilities/pgffor.s
+ty
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/latex/pgf/utilities/pgfkeys.
+sty
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/utilities/pgfkey
+s.code.tex))
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/latex/pgf/math/pgfmath.sty
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/math/pgfmath.cod
+e.tex))
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/utilities/pgffor
+.code.tex
+Package: pgffor 2021/05/15 v3.1.9a (3.1.9a)
+
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/math/pgfmath.cod
+e.tex)
+\pgffor@iter=\dimen187
+\pgffor@skip=\dimen188
+\pgffor@stack=\toks28
+\pgffor@toks=\toks29
+))
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/frontendlayer/ti
+kz/tikz.code.tex
+Package: tikz 2021/05/15 v3.1.9a (3.1.9a)
+
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/libraries/pgflib
+raryplothandlers.code.tex
+File: pgflibraryplothandlers.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+\pgf@plot@mark@count=\count272
+\pgfplotmarksize=\dimen189
+)
+\tikz@lastx=\dimen190
+\tikz@lasty=\dimen191
+\tikz@lastxsaved=\dimen192
+\tikz@lastysaved=\dimen193
+\tikz@lastmovetox=\dimen194
+\tikz@lastmovetoy=\dimen195
+\tikzleveldistance=\dimen196
+\tikzsiblingdistance=\dimen197
+\tikz@figbox=\box57
+\tikz@figbox@bg=\box58
+\tikz@tempbox=\box59
+\tikz@tempbox@bg=\box60
+\tikztreelevel=\count273
+\tikznumberofchildren=\count274
+\tikznumberofcurrentchild=\count275
+\tikz@fig@count=\count276
+
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/modules/pgfmodul
+ematrix.code.tex
+File: pgfmodulematrix.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+\pgfmatrixcurrentrow=\count277
+\pgfmatrixcurrentcolumn=\count278
+\pgf@matrix@numberofcolumns=\count279
+)
+\tikz@expandcount=\count280
+
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/frontendlayer/ti
+kz/libraries/tikzlibrarytopaths.code.tex
+File: tikzlibrarytopaths.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+)))
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/latex/tkz-base/tkz-base.sty
+2022/01/28 4.05b tkz-base.sty
+Package: tkz-base 2022/01/28 4.05b tkz-base
+
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/frontendlayer/ti
+kz/libraries/tikzlibraryangles.code.tex
+File: tikzlibraryangles.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+)
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/frontendlayer/ti
+kz/libraries/tikzlibraryarrows.code.tex
+File: tikzlibraryarrows.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/libraries/pgflib
+raryarrows.code.tex
+File: pgflibraryarrows.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+\arrowsize=\dimen198
+))
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/libraries/pgflib
+raryarrows.meta.code.tex
+File: pgflibraryarrows.meta.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+\pgfarrowinset=\dimen199
+\pgfarrowlength=\dimen256
+\pgfarrowwidth=\dimen257
+\pgfarrowlinewidth=\dimen258
+)
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/frontendlayer/ti
+kz/libraries/tikzlibrarycalc.code.tex
+File: tikzlibrarycalc.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+)
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/frontendlayer/ti
+kz/libraries/tikzlibrarydecorations.code.tex
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/modules/pgfmodul
+edecorations.code.tex
+\pgfdecoratedcompleteddistance=\dimen259
+\pgfdecoratedremainingdistance=\dimen260
+\pgfdecoratedinputsegmentcompleteddistance=\dimen261
+\pgfdecoratedinputsegmentremainingdistance=\dimen262
+\pgf@decorate@distancetomove=\dimen263
+\pgf@decorate@repeatstate=\count281
+\pgfdecorationsegmentamplitude=\dimen264
+\pgfdecorationsegmentlength=\dimen265
+)
+\tikz@lib@dec@box=\box61
+)
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/frontendlayer/ti
+kz/libraries/tikzlibrarydecorations.markings.code.tex
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/libraries/decora
+tions/pgflibrarydecorations.markings.code.tex))
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/frontendlayer/ti
+kz/libraries/tikzlibrarydecorations.pathreplacing.code.tex
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/libraries/decora
+tions/pgflibrarydecorations.pathreplacing.code.tex))
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/frontendlayer/ti
+kz/libraries/tikzlibrarydecorations.shapes.code.tex
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/libraries/decora
+tions/pgflibrarydecorations.shapes.code.tex))
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/frontendlayer/ti
+kz/libraries/tikzlibrarydecorations.text.code.tex
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/libraries/decora
+tions/pgflibrarydecorations.text.code.tex
+\pgf@lib@dec@text@box=\box62
+)
+\tikz@lib@dec@te@box=\box63
+)
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/frontendlayer/ti
+kz/libraries/tikzlibrarydecorations.pathmorphing.code.tex
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/libraries/decora
+tions/pgflibrarydecorations.pathmorphing.code.tex))
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/frontendlayer/ti
+kz/libraries/tikzlibraryintersections.code.tex
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/libraries/pgflib
+raryintersections.code.tex
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/libraries/pgflib
+raryfpu.code.tex)
+\pgf@intersect@solutions=\count282
+))
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/frontendlayer/ti
+kz/libraries/tikzlibraryplotmarks.code.tex
+File: tikzlibraryplotmarks.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/libraries/pgflib
+raryplotmarks.code.tex
+File: pgflibraryplotmarks.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+))
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/frontendlayer/ti
+kz/libraries/tikzlibraryquotes.code.tex
+File: tikzlibraryquotes.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+)
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/frontendlayer/ti
+kz/libraries/tikzlibraryshapes.misc.code.tex
+File: tikzlibraryshapes.misc.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/libraries/shapes
+/pgflibraryshapes.misc.code.tex
+File: pgflibraryshapes.misc.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+))
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/frontendlayer/ti
+kz/libraries/tikzlibrarypositioning.code.tex
+File: tikzlibrarypositioning.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+)
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/frontendlayer/ti
+kz/libraries/tikzlibraryshadows.code.tex
+File: tikzlibraryshadows.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/frontendlayer/ti
+kz/libraries/tikzlibraryfadings.code.tex
+File: tikzlibraryfadings.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/libraries/pgflib
+raryfadings.code.tex
+File: pgflibraryfadings.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+)))
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/frontendlayer/ti
+kz/libraries/tikzlibrarypatterns.code.tex
+File: tikzlibrarypatterns.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/libraries/pgflib
+rarypatterns.code.tex
+File: pgflibrarypatterns.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+))
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/generic/pgf/frontendlayer/ti
+kz/libraries/tikzlibrarythrough.code.tex
+File: tikzlibrarythrough.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+)
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/latex/numprint/numprint.sty
+Package: numprint 2012/08/20 v1.39 Print numbers (HH)
+
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/latex/tools/array.sty
+Package: array 2021/10/04 v2.5f Tabular extension package (FMi)
+\col@sep=\dimen266
+\ar@mcellbox=\box64
+\extrarowheight=\dimen267
+\NC@list=\toks30
+\extratabsurround=\skip49
+\backup@length=\skip50
+\ar@cellbox=\box65
+)
+\c@nprt@mantissa@digitsbefore=\count283
+\c@nprt@mantissa@digitsafter=\count284
+\c@nprt@exponent@digitsbefore=\count285
+\c@nprt@exponent@digitsafter=\count286
+\nprt@digitwidth=\skip51
+\nprt@sepwidth=\skip52
+\nprt@decimalwidth=\skip53
+\nprt@blockwidth=\skip54
+\nprt@digittoks=\toks31
+\nprt@pretoks=\toks32
+\nprt@posttoks=\toks33
+\nprt@thisdigit=\count287
+\nprt@curpos=\count288
+\nprt@rndpos=\count289
+\c@nprt@digitsfirstblock=\count290
+\c@nprt@blockcnt=\count291
+\c@nprt@cntprint=\count292
+
+No configuration file `numprint.cfg' found.)
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/latex/l3packages/xfp/xfp.sty
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/latex/l3kernel/expl3.sty
+Package: expl3 2022-02-24 L3 programming layer (loader) 
+
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/latex/l3backend/l3backend-lu
+atex.def
+File: l3backend-luatex.def 2022-02-07 L3 backend support: PDF output (LuaTeX)
+\l__color_backend_stack_int=\count293
+\l__pdf_internal_box=\box66
+))
+Package: xfp 2022-01-12 L3 Floating point unit
+) (C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/latex/fp/fp.sty
+Package: fp 1995/04/02
+
+`Fixed Point Package', Version 0.8, April 2, 1995 (C) Michael Mehlich
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/latex/fp/defpattern.sty
+Package: defpattern 1994/10/12
+\actioncount=\count294
+)
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/latex/fp/fp-basic.sty
+Package: fp-basic 1996/05/13
+\FP@xs=\count295
+\FP@xia=\count296
+\FP@xib=\count297
+\FP@xfa=\count298
+\FP@xfb=\count299
+\FP@rega=\count300
+\FP@regb=\count301
+\FP@regs=\count302
+\FP@times=\count303
+)
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/latex/fp/fp-addons.sty
+Package: fp-addons 1995/03/15
+)
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/latex/fp/fp-snap.sty
+Package: fp-snap 1995/04/05
+)
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/latex/fp/fp-exp.sty
+Package: fp-exp 1995/04/03
+)
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/latex/fp/fp-trigo.sty
+Package: fp-trigo 1995/04/14
+)
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/latex/fp/fp-pas.sty
+Package: fp-pas 1994/08/29
+)
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/latex/fp/fp-random.sty
+Package: fp-random 1995/02/23
+\FPseed=\count304
+)
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/latex/fp/fp-eqn.sty
+Package: fp-eqn 1995/04/03
+)
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/latex/fp/fp-upn.sty
+Package: fp-upn 1996/10/21
+)
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/latex/fp/fp-eval.sty
+Package: fp-eval 1995/04/03
+))
+\tkz@ax=\dimen268
+\tkz@ay=\dimen269
+\tkz@bx=\dimen270
+\tkz@by=\dimen271
+\tkz@cx=\dimen272
+\tkz@cy=\dimen273
+\tkz@dx=\dimen274
+\tkz@dy=\dimen275
+\tkz@tax=\dimen276
+\tkz@tay=\dimen277
+\tkz@tbx=\dimen278
+\tkz@tby=\dimen279
+\tkz@tcx=\dimen280
+\tkz@tcy=\dimen281
+\tkz@tdx=\dimen282
+\tkz@tdy=\dimen283
+\tkz@cntmk=\count305
+
+Local configuration file tkz-base.cfg found and used
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/latex/tkz-base/tkz-base.cfg
+2022/01/28 4.05b tkz-base.cfg
+)
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/latex/tkz-base/tkz-tools-mod
+ules.tex
+2022/01/28 4.05b tkz-tools-modules.tex
+)
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/latex/tkz-base/tkz-lib-marks
+.tex
+2022/01/28 4.05b tkz-lib-marks.tex
+)
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/latex/tkz-base/tkz-lib-shape
+.tex
+2022/01/28 4.05b tkz-lib-shape.tex
+)
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/latex/tkz-base/tkz-tools-bas
+e.tex
+2022/01/28 4.05b tkz-tools-base.tex
+)
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/latex/tkz-base/tkz-tools-uti
+lities.tex
+2022/01/28 4.05b tkz-tools-utilities.tex
+)
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/latex/tkz-base/tkz-tools-col
+ors.tex
+2022/01/28 4.05b tkz-tools-colors
+)
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/latex/tkz-base/tkz-tools-tex
+t.tex
+2022/01/28 4.05b tkz-tools-text.tex
+)
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/latex/tkz-base/tkz-tools-BB.
+tex
+2022/01/28 4.05b tkz-obj-BB.tex
+)
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/latex/tkz-base/tkz-tools-ari
+th.tex
+2022/01/28 4.05b tkz-tools-arith.tex
+File: tkz-tool-arith.tex tkz-tool-arith 3.02 c
+)
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/latex/tkz-base/tkz-tools-pri
+nt.tex
+2022/01/28 4.05b tkz-tools-print
+)
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/latex/tkz-base/tkz-tools-mis
+c.tex
+2022/01/28 4.05b tkz-tools-misc.tex
+)
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/latex/tkz-base/tkz-obj-axes.
+tex
+2022/01/28 4.05b tkz-obj-axes
+)
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/latex/tkz-base/tkz-obj-grids
+.tex
+2022/01/28 4.05b tkz-obj-grids.tex
+)
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/latex/tkz-base/tkz-obj-marks
+.tex
+2022/01/28 4.05b tkz-obj-marks.tex
+)
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/latex/tkz-base/tkz-obj-point
+s.tex
+2022/01/28 4.05b tkz-obj-eu-points.tex
+)
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/latex/tkz-base/tkz-obj-rep.t
+ex
+2022/01/28 4.05b tkz-obj-rep.tex
+)) (./exemples.aux)
+\openout1 = exemples.aux
+
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 12.
+LaTeX Font Info:    ... okay on input line 12.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 12.
+LaTeX Font Info:    ... okay on input line 12.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 12.
+LaTeX Font Info:    ... okay on input line 12.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 12.
+LaTeX Font Info:    ... okay on input line 12.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 12.
+LaTeX Font Info:    Trying to load font information for TS1+cmr on input line 1
+2.
+
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/latex/base/ts1cmr.fd
+File: ts1cmr.fd 2019/12/16 v2.5j Standard LaTeX font definitions
+)
+LaTeX Font Info:    ... okay on input line 12.
+LaTeX Font Info:    Checking defaults for TU/lmr/m/n on input line 12.
+LaTeX Font Info:    ... okay on input line 12.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 12.
+LaTeX Font Info:    ... okay on input line 12.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 12.
+LaTeX Font Info:    ... okay on input line 12.
+
+*geometry* driver: auto-detecting
+*geometry* detected driver: luatex
+*geometry* verbose mode - [ preamble ] result:
+* driver: luatex
+* paper: a4paper
+* layout: <same size as paper>
+* layoutoffset:(h,v)=(0.0pt,0.0pt)
+* modes: 
+* h-part:(L,W,R)=(56.9055pt, 483.69687pt, 56.9055pt)
+* v-part:(T,H,B)=(56.9055pt, 731.23584pt, 56.9055pt)
+* \paperwidth=597.50787pt
+* \paperheight=845.04684pt
+* \textwidth=483.69687pt
+* \textheight=731.23584pt
+* \oddsidemargin=-15.36449pt
+* \evensidemargin=-15.36449pt
+* \topmargin=-52.36449pt
+* \headheight=12.0pt
+* \headsep=25.0pt
+* \topskip=12.0pt
+* \footskip=30.0pt
+* \marginparwidth=35.0pt
+* \marginparsep=10.0pt
+* \columnsep=10.0pt
+* \skip\footins=10.8pt plus 4.0pt minus 2.0pt
+* \hoffset=0.0pt
+* \voffset=0.0pt
+* \mag=1000
+* \@twocolumnfalse
+* \@twosidefalse
+* \@mparswitchfalse
+* \@reversemarginfalse
+* (1in=72.27pt=25.4mm, 1cm=28.453pt)
+
+
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/context/base/mkii/supp-pdf.m
+kii
+[Loading MPS to PDF converter (version 2006.09.02).]
+\scratchcounter=\count306
+\scratchdimen=\dimen284
+\scratchbox=\box67
+\nofMPsegments=\count307
+\nofMParguments=\count308
+\everyMPshowfont=\toks34
+\MPscratchCnt=\count309
+\MPscratchDim=\dimen285
+\MPnumerator=\count310
+\makeMPintoPDFobject=\count311
+\everyMPtoPDFconversion=\toks35
+)
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/latex/epstopdf-pkg/epstopdf-
+base.sty
+Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
+Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
+85.
+
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/latex/00miktex/epstopdf-sys.
+cfg
+File: epstopdf-sys.cfg 2021/03/18 v2.0 Configuration of epstopdf for MiKTeX
+))
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <8> on input line 31.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <6> on input line 31.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <5> on input line 31.
+LaTeX Font Info:    Trying to load font information for U+rsfs on input line 31
+.
+
+(C:/Users/Virgil/AppData/Local/Programs/MiKTeX/tex/latex/jknappen/ursfs.fd
+File: ursfs.fd 1998/03/24 rsfs font definition file (jk)
+)
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <7> on input line 39.
+
+[1
+
+{C:/Users/Virgil/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}]
+Overfull \hbox (9.02802pt too wide) in paragraph at lines 157--158
+[][] 
+ []
+
+[2] [3] [4] (./exemples.aux))
+
+Here is how much of LuaTeX's memory you used:
+ 18735 strings out of 477785
+ 156268,794899 words of node,token memory allocated
+ 938 words of node memory still in use:
+   19 hlist, 1 vlist, 9 rule, 2 glue, 3 kern, 1 glyph, 53 attribute, 49 glue_spe
+c, 53 attribute_list, 2 write, 16 pdf_literal, 16 pdf_colorstack nodes
+   avail lists: 2:16233,3:7648,4:62,5:28,6:10,7:7485,8:4,9:2216,11:5
+ 38503 multiletter control sequences out of 65536+600000
+ 40 fonts using 2474911 bytes
+ 100i,6n,98p,618b,880s stack positions out of 10000i,1000n,20000p,200000b,80000s
+<//?/c:/users/virgil/appdata/local/programs/miktex/fonts/opentype/public/lm/lmro
+man12-regular.otf><//?/c:/users/virgil/appdata/local/programs/miktex/fonts/opent
+ype/public/lm/lmroman12-bold.otf><C:/Users/Virgil/AppData/Local/Programs/MiKTeX/
+fonts/type1/public/amsfonts/cm/cmmi7.pfb><C:/Users/Virgil/AppData/Local/Programs
+/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi8.pfb><C:/Users/Virgil/AppData/Local/
+Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr8.pfb><C:/Users/Virgil/AppData
+/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy8.pfb><C:/Users/Virgil
+/AppData/Local/Programs/MiKTeX/fonts/type1/public/rsfs/rsfs10.pfb>
+Output written on exemples.pdf (4 pages, 69404 bytes).
+
+PDF statistics: 76 PDF objects out of 1000 (max. 8388607)
+ 0 named destinations out of 1000 (max. 131072)
+ 176 words of extra memory for PDF output out of 10000 (max. 100000000)
+
