@@ -527,7 +527,7 @@ Pour insérer ou supprimer un point, il suffit de double-cliquer.
 <p style="font-weight: bold">
 <input type="checkbox" id="cubicHide"> <label for="cubicHide" style="margin-right:1cm">Cacher les contrôles</label>
 <input type="checkbox" id="precision"> <label for="precision" style="margin-right:1cm">Mode une décimale</label>
-<input type="checkbox" id="smartInsertion"> <label for="smartInsertion" style="margin-right:1cm">Insertion intelligente (compare les abscisses)</label>
+<input type="checkbox" id="smartInsertion"> <label for="smartInsertion">Insertion intelligente (compare les abscisses)</label>
 <input type="checkbox" id="lock"> <label for="lock" style="margin-right:1cm">Verrouiller les paires de points de contrôle</label>
 </p>
 
