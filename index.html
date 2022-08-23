@@ -20,6 +20,7 @@ var tikzLabelsSelect;
 var tikzSubGridSelect;
 var tikzStartEndPointsSelect;
 var tikzCubicLabelSelect;
+var textBox
 
 var cubicCanvasWidth=1200;
 var cubicCanvasHeight=800;
@@ -184,15 +185,15 @@ function printTikzCode() {
 	var res = "";
 	if ( tikzPreambleSelect.checked ) {
 		setLimits();
-		res="&#92begin{tikzpicture}<br>%<br>% Limites du repère modifiables<br>&#92def&#92bezierXmin{"+xmin.toString()+"}<br>&#92def&#92bezierXmax{"+xmax.toString()+"}<br>&#92def&#92bezierYmin{"+ymin.toString()+"}<br>&#92def&#92bezierYmax{"+ymax.toString()+"}<br>%<br>% Grille<br>"
+		res="&#92begin{tikzpicture}\n%\n% Limites du repère modifiables\n&#92def&#92bezierXmin{"+xmin.toString()+"}\n&#92def&#92bezierXmax{"+xmax.toString()+"}\n&#92def&#92bezierYmin{"+ymin.toString()+"}\n&#92def&#92bezierYmax{"+ymax.toString()+"}\n%\n% Grille\n"
 		if ( tikzSubGridSelect.checked ) {
-			res = res + "&#92draw[step=0.5,densely dashed,line width=0.25pt,draw=black!20] (&#92bezierXmin,&#92bezierYmin) grid (&#92bezierXmax,&#92bezierYmax);<br>";
+			res = res + "&#92draw[step=0.5,densely dashed,line width=0.25pt,draw=black!20] (&#92bezierXmin,&#92bezierYmin) grid (&#92bezierXmax,&#92bezierYmax);\n";
 		}
-		res = res + "&#92draw[step=1,densely dashed,line width=0.4pt,draw=black!30] (&#92bezierXmin,&#92bezierYmin) grid (&#92bezierXmax,&#92bezierYmax);<br>%<br>% Création des axes avec tkz-base<br>&#92tkzInit[xmin=&#92bezierXmin,xmax=&#92bezierXmax,ymin=&#92bezierYmin,ymax=&#92bezierYmax]<br>&#92tkzSetUpAxis[ticka=3.5pt,tickb=3.5pt]	%Taille graduations<br>"
+		res = res + "&#92draw[step=1,densely dashed,line width=0.4pt,draw=black!30] (&#92bezierXmin,&#92bezierYmin) grid (&#92bezierXmax,&#92bezierYmax);\n%\n% Création des axes avec tkz-base\n&#92tkzInit[xmin=&#92bezierXmin,xmax=&#92bezierXmax,ymin=&#92bezierYmin,ymax=&#92bezierYmax]\n&#92tkzSetUpAxis[ticka=3.5pt,tickb=3.5pt]	%Taille graduations\n"
 		if ( tikzLabelsSelect.checked ) {
-			res = res + "&#92tkzLabelX[font=&#92scriptsize,orig=false,fill=none] % Graduations X <br>&#92tkzLabelY[font=&#92scriptsize,orig=false,fill=none] % Graduations Y<br>";
+			res = res + "&#92tkzLabelX[font=&#92scriptsize,orig=false,fill=none] % Graduations X \n&#92tkzLabelY[font=&#92scriptsize,orig=false,fill=none] % Graduations Y\n";
 		}
-		res = res + "&#92tkzDrawX[right space=0pt,above left=4pt,font=&#92scriptsize] %Axe X<br>&#92tkzDrawY[up space=0pt,below right=4pt,font=&#92scriptsize] %Axe Y<br>&#92clip (&#92bezierXmin,&#92bezierYmin) rectangle (&#92bezierXmax,&#92bezierYmax);<br>%<br>% Courbe<br>%<br>";
+		res = res + "&#92tkzDrawX[right space=0pt,above left=4pt,font=&#92scriptsize] %Axe X\n&#92tkzDrawY[up space=0pt,below right=4pt,font=&#92scriptsize] %Axe Y\n&#92clip (&#92bezierXmin,&#92bezierYmin) rectangle (&#92bezierXmax,&#92bezierYmax);\n%\n% Courbe\n%\n";
 	}
 	res = res + "&#92draw[line width=1pt] ";
 	for(var j=0;j<cubicPoints.length-1;j=j+3) {
@@ -212,9 +213,9 @@ function printTikzCode() {
 	}
 	res = res + ";";
 	if ( tikzPreambleSelect.checked ) {
-		res = res + "<br>&#92end{tikzpicture}";
+		res = res + "\n&#92end{tikzpicture}";
 	}
-	document.getElementById("coordinates").innerHTML=res;
+	textBox.innerHTML=res;
 }
 
 //
@@ -407,7 +408,7 @@ function init() {
         message.innerHTML = "Oops... Sorry, your browser doesn't support the canvas element.";
         return;
     }
-	
+	// Options
     lockSelect = document.getElementById("lock");
     lockSelect.checked = true;
     lockSelect.onclick = doLock;
@@ -434,6 +435,8 @@ function init() {
 	tikzCubicLabelSelect = document.getElementById("tikzCubicLabel");
 	tikzCubicLabelSelect.checked = true;
 	tikzCubicLabelSelect.onclick = function() { printTikzCode(); };	
+	
+	textBox = document.getElementById("coordinates");
     cubicPoints = [
         new Point2D(350,450),  new Point2D(450,550),
         new Point2D(450,200), new Point2D(500,200), new Point2D(550,200),
@@ -500,7 +503,7 @@ Pour insérer ou supprimer un point, il suffit de double-cliquer.
 <input type="checkbox" id="tikzCubicLabel"> <label for="tikzCubicLabel" style="margin-right:1cm">Insérer un label sur la dernière portion de la courbe (position à ajuster à la main)</label>
 </p>
 
-<p id="coordinates" style="background-color:white; padding:5px; border-color:black; border:1px solid; font-size: 12px; height: 500px"> </p>
+<textarea onClick="this.select();" id="coordinates" rows="30" style="width:100%; background-color:white; padding:5px; border-color:black; border:1px solid; font-size: 12px; height: 500px"> </textarea>
 
 <p style="font-style=italic;margin-top:1cm;"> v1.0 - Basé sur <a href="https://math.hws.edu/eck/cs424/notes2013/canvas/bezier.html">Bezier Curve Demos</a> </p>
 
