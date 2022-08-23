@@ -20,6 +20,7 @@ var tikzLabelsSelect;
 var tikzSubGridSelect;
 var tikzStartEndPointsSelect;
 var tikzCubicLabelSelect;
+var tikzTangentsSelect;
 var textBox
 
 var cubicCanvasWidth=1200;
@@ -28,6 +29,7 @@ var pixelsUnit=50; // Espacement graduations
 var subUnits=2; // Sous graduation
 var p = 0; // Padding
 var precisionSnap=0.1;
+var invPrecisionSnap=10;
 var pixelSnap=precisionSnap * pixelsUnit;
 
 var xmin,xmax,ymin,ymax;
@@ -140,7 +142,7 @@ function cubicDraw() {
     cubicGraphics.lineWidth = 2;
     cubicGraphics.strokeStyle = "black";
     cubicGraphics.stroke();
-	printTikzCode();
+	//printTikzCode();
 }
 
 function disk( graphics, x, y, radius ) {
@@ -152,6 +154,14 @@ function disk( graphics, x, y, radius ) {
 //
 // TIKZ
 //
+
+function convertX(x) {
+	return ((x-cubicCanvasWidth/2)/pixelsUnit);
+}
+
+function convertY(y) {
+	return ((cubicCanvasHeight/2-y)/pixelsUnit);
+}
 
 function setLimits() {
 	xmin=cubicPoints[0].x;
@@ -165,15 +175,15 @@ function setLimits() {
 		if (p.y > ymin) {ymin = p.y} // Inversion, not an error
 		if (p.y < ymax) {ymax = p.y}
 	}
-	xmin = Math.round(((xmin-cubicCanvasWidth/2)/pixelsUnit - 1));
-	xmax = Math.round(((xmax-cubicCanvasWidth/2)/pixelsUnit + 1));
-	ymin = Math.round(((cubicCanvasHeight/2-ymin)/pixelsUnit - 1));
-	ymax = Math.round(((cubicCanvasHeight/2-ymax)/pixelsUnit + 1));
+	xmin = Math.round((convertX(xmin) - 1));
+	xmax = Math.round((convertX(xmax) + 1));
+	ymin = Math.round((convertY(ymin) - 1));
+	ymax = Math.round((convertY(ymax) + 1));
 }
 
 function pointToStr(point) {
-	var x0 = (point.x-cubicCanvasWidth/2)/pixelsUnit;
-	var y0 = (cubicCanvasHeight/2-point.y)/pixelsUnit;
+	var x0 = convertX(point.x);
+	var y0 = convertY(point.y);
 	return("("+x0.toString()+","+y0.toString()+")")
 }
 
@@ -183,18 +193,20 @@ function printTikzCode() {
 	//				 .. (3,4) .. controls (4,4) and (6,2.5) 
 	//				 .. (7,1) node[pos=0.3,above right] {$\mathscr C_1$} node[pos=1,stylepointextremites] {};
 	var res = "";
+	// Tikz preamble
 	if ( tikzPreambleSelect.checked ) {
 		setLimits();
-		res="&#92begin{tikzpicture}\n%\n% Limites du repère modifiables\n&#92def&#92bezierXmin{"+xmin.toString()+"}\n&#92def&#92bezierXmax{"+xmax.toString()+"}\n&#92def&#92bezierYmin{"+ymin.toString()+"}\n&#92def&#92bezierYmax{"+ymax.toString()+"}\n%\n% Grille\n"
+		res="&#92begin{tikzpicture}\n\t%\n\t% Limites du repère modifiables\n\t&#92def&#92bezierXmin{"+xmin.toString()+"}\n\t&#92def&#92bezierXmax{"+xmax.toString()+"}\n\t&#92def&#92bezierYmin{"+ymin.toString()+"}\n\t&#92def&#92bezierYmax{"+ymax.toString()+"}\n\t%\n\t% Grille\n\t"
 		if ( tikzSubGridSelect.checked ) {
-			res = res + "&#92draw[step=0.5,densely dashed,line width=0.25pt,draw=black!20] (&#92bezierXmin,&#92bezierYmin) grid (&#92bezierXmax,&#92bezierYmax);\n";
+			res = res + "&#92draw[step=0.5,densely dashed,line width=0.25pt,draw=black!20] (&#92bezierXmin,&#92bezierYmin) grid (&#92bezierXmax,&#92bezierYmax);\n\t";
 		}
-		res = res + "&#92draw[step=1,densely dashed,line width=0.4pt,draw=black!30] (&#92bezierXmin,&#92bezierYmin) grid (&#92bezierXmax,&#92bezierYmax);\n%\n% Création des axes avec tkz-base\n&#92tkzInit[xmin=&#92bezierXmin,xmax=&#92bezierXmax,ymin=&#92bezierYmin,ymax=&#92bezierYmax]\n&#92tkzSetUpAxis[ticka=3.5pt,tickb=3.5pt]	%Taille graduations\n"
+		res = res + "&#92draw[step=1,densely dashed,line width=0.4pt,draw=black!30] (&#92bezierXmin,&#92bezierYmin) grid (&#92bezierXmax,&#92bezierYmax);\n\t%\n\t% Création des axes avec tkz-base\n\t&#92tkzInit[xmin=&#92bezierXmin,xmax=&#92bezierXmax,ymin=&#92bezierYmin,ymax=&#92bezierYmax]\n\t&#92tkzSetUpAxis[ticka=3.5pt,tickb=3.5pt]	%Taille graduations\n\t"
 		if ( tikzLabelsSelect.checked ) {
-			res = res + "&#92tkzLabelX[font=&#92scriptsize,orig=false,fill=none] % Graduations X \n&#92tkzLabelY[font=&#92scriptsize,orig=false,fill=none] % Graduations Y\n";
+			res = res + "&#92tkzLabelX[font=&#92scriptsize,orig=false,fill=none] % Graduations X \n\t&#92tkzLabelY[font=&#92scriptsize,orig=false,fill=none] % Graduations Y\n\t";
 		}
-		res = res + "&#92tkzDrawX[right space=0pt,above left=4pt,font=&#92scriptsize] %Axe X\n&#92tkzDrawY[up space=0pt,below right=4pt,font=&#92scriptsize] %Axe Y\n&#92clip (&#92bezierXmin,&#92bezierYmin) rectangle (&#92bezierXmax,&#92bezierYmax);\n%\n% Courbe\n%\n";
+		res = res + "&#92tkzDrawX[right space=0pt,above left=4pt,font=&#92scriptsize] %Axe X\n\t&#92tkzDrawY[up space=0pt,below right=4pt,font=&#92scriptsize] %Axe Y\n\t&#92clip (&#92bezierXmin,&#92bezierYmin) rectangle (&#92bezierXmax,&#92bezierYmax);\n\t%\n\t% Courbe\n\t%\n\t";
 	}
+	// Curve start
 	res = res + "&#92draw[line width=1pt] ";
 	for(var j=0;j<cubicPoints.length-1;j=j+3) {
 		res=res + pointToStr(cubicPoints[j]);
@@ -212,6 +224,32 @@ function printTikzCode() {
 		res = res + " node[pos=1,circle,fill,inner sep=0.8pt] {}";
 	}
 	res = res + ";";
+	// Tangents
+	if ( tikzTangentsSelect.checked ) {
+		res = res + "\n\t%\n\t% Tangentes";
+		for(var j=3;j<cubicPoints.length-2;j=j+3) {
+			var p0 = cubicPoints[j];
+			var p1 = cubicPoints[j+1]
+			var a1 = (convertY(p1.y) - convertY(p0.y));
+			var a2 = (convertX(p1.x) - convertX(p0.x));
+			if ( a2 < 0 ) {
+				a1 = -1 * a1;
+				a2 = -1 * a2;
+			}
+			var b = convertY(p1.y) - a1 / a2 * convertX(p1.x);
+			console.log(a1)
+			a1 = Math.round(a1 * invPrecisionSnap ) / invPrecisionSnap;
+			a2 = Math.round(a2 * invPrecisionSnap) / invPrecisionSnap;
+			console.log(a1)
+			b = Math.round(b * 1000)/1000;
+			res = res + "\n\t&#92draw[domain=&#92bezierXmin:&#92bezierXmax,line width=1pt] plot (&#92x,{"+a1.toString()+"/"+a2.toString()+"*&#92x";
+			if ( b > 0 ) {
+				res = res + "+";
+			}
+			res = res + b.toString()+"});";
+		}
+	}
+	// End of the environement if selected
 	if ( tikzPreambleSelect.checked ) {
 		res = res + "\n&#92end{tikzpicture}";
 	}
@@ -243,6 +281,7 @@ function doMouseUp(evt) {
     draggingCubic = false;
 	draggingCubicSpecial = false;
     draggingQuad = false;
+	printTikzCode();
 }
 
 function doCubicMouseDown(evt) {
@@ -435,6 +474,9 @@ function init() {
 	tikzCubicLabelSelect = document.getElementById("tikzCubicLabel");
 	tikzCubicLabelSelect.checked = true;
 	tikzCubicLabelSelect.onclick = function() { printTikzCode(); };	
+	tikzTangentsSelect = document.getElementById("tikzTangents");
+	tikzTangentsSelect.checked = false;
+	tikzTangentsSelect.onclick = function() { printTikzCode(); };
 	
 	textBox = document.getElementById("coordinates");
     cubicPoints = [
@@ -444,11 +486,15 @@ function init() {
         new Point2D(775,200), new Point2D(850,275)
     ];
     cubicDraw();
+	printTikzCode();
     document.addEventListener("mouseup", doMouseUp, false);
     cubicCanvas.addEventListener("mousedown", doCubicMouseDown, false);
     cubicCanvas.addEventListener("mousemove", doCubicMouseMove, false);
 	cubicCanvas.addEventListener("dblclick", doCubicMouseDoubleClick, false);
 };
+
+// onClick="this.select();"
+
 </script>
 </head>
 <body onload="init()" style="background-color: ivory; width:1200px; margin:0px auto; padding:30px;">
@@ -463,17 +509,18 @@ Please use a newer version or a different browser.</p>
 <hr>
 <![endif]-->
 
-   
 <h1>Editeur de courbe de Bezier avec export Tikz</h1>
 
 <p id="message" style="font-weight: bold"></p>
 
 <p>
+Cet outil permet de créer des courbes sur l'interface graphique ci-dessous puis de les exporter en code tikz pour une intégration LaTeX. (Un clic droit -> Enregistrer l'image sous ou une capture d'écran sont aussi envisageables).<br>
 Pour insérer ou supprimer un point, il suffit de double-cliquer.
 <ul>
+<li> Le mode une décimale arrondit les coordonnées des points pour faciliter l'alignement. </li>
 <li> Le mode intelligent permet d'insérer un nouveau point dans une courbe existente. Il ne fonctionne correctement que si les points de contrôle principaux (noirs) sont classés par abscisses croissantes (utile pour représenter des fonctions f:R -> R). S'il est désactivé, les nouveaux points sont ajoutés après le dernier. </li>
-<li> (Déconseillé) On peut déverouiller les points de contrôle pour les ajuster indépendamment, mais la courbe sera alors moins régulière. </li>
 <li> Appuyer sur Shift (Maj) avant ou pendant le déplacement d'un point de contrôle secondaire permet de le déplacer sur la tangente, permettant de garder une certaine régularité tout en ayant un contrôle plus fin. </li>
+<li> (Déconseillé) On peut déverouiller les points de contrôle pour les ajuster indépendamment, mais la courbe sera alors moins régulière. </li>
 </ul>
 </p>
 
@@ -503,10 +550,13 @@ Pour insérer ou supprimer un point, il suffit de double-cliquer.
 <input type="checkbox" id="tikzCubicLabel"> <label for="tikzCubicLabel" style="margin-right:1cm">Insérer un label sur la dernière portion de la courbe (position à ajuster à la main)</label>
 </p>
 
-<textarea onClick="this.select();" id="coordinates" rows="30" style="width:100%; background-color:white; padding:5px; border-color:black; border:1px solid; font-size: 12px; height: 500px"> </textarea>
+<p style="font-weight: bold">
+<input type="checkbox" id="tikzTangents"> <label for="tikzTangents" style="margin-right:1cm">Afficher les tangentes (non verticales)</label>
+</p>
 
-<p style="font-style=italic;margin-top:1cm;"> v1.0 - Basé sur <a href="https://math.hws.edu/eck/cs424/notes2013/canvas/bezier.html">Bezier Curve Demos</a> </p>
+<textarea readonly id="coordinates" rows="30" style="width:100%; background-color:white; padding:5px; border-color:black; border:1px solid; font-size: 12px;"> </textarea>
+
+<p style="font-style=italic; margin-top:1cm;"> v1.1 - Basé sur <a href="https://math.hws.edu/eck/cs424/notes2013/canvas/bezier.html">Bezier Curve Demos</a> - Intégration Tikz et ajout de fonctionnalités par moi </p>
 
 </body>
 </html>
-
