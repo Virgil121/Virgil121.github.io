@@ -257,7 +257,7 @@ function printTikzCode() {
 				a2 = Math.round(a2 * invPrecisionSnap) / invPrecisionSnap;
 			}
 			else {
-				a1 = Math.round(a1 * 1000 ) / 1000;
+				a1 = Math.round(a1 * 1000) / 1000;
 				a2 = Math.round(a2 * 1000) / 1000;			
 			}
 			if ( a2 != 0 ) {
@@ -426,6 +426,9 @@ function doCubicMouseMove(evt) {
 		//}
 	}
 	else {
+		// Snap the point to align it with the precision
+		cubicPoints[dragPointIndex].x = pixelSnap*Math.round(cubicPoints[dragPointIndex].x/pixelSnap);
+		cubicPoints[dragPointIndex].y = pixelSnap*Math.round(cubicPoints[dragPointIndex].y/pixelSnap);
 		cubicPoints[dragPointIndex].x += offsetX;
 		cubicPoints[dragPointIndex].y += offsetY;
 		if ( dragPointIndex % 3 == 0) {
@@ -591,7 +594,7 @@ Pour insérer ou supprimer un point, il suffit de double-cliquer.
 
 <textarea readonly id="coordinates" rows="30" style="width:100%; background-color:white; padding:5px; border-color:black; border:1px solid; font-size: 12px;"> </textarea>
 
-<p style="font-style=italic; margin-top:1cm;"> v1.1b - Basé sur <a href="https://math.hws.edu/eck/cs424/notes2013/canvas/bezier.html">Bezier Curve Demos</a> - Intégration Tikz et ajout de fonctionnalités par moi </p>
+<p style="font-style=italic; margin-top:1cm;"> v1.1c - Basé sur <a href="https://math.hws.edu/eck/cs424/notes2013/canvas/bezier.html">Bezier Curve Demos</a> - Intégration Tikz et ajout de fonctionnalités par moi </p>
 
 </body>
 </html>
