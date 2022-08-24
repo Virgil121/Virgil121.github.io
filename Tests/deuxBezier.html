@@ -10,8 +10,7 @@
 var cubicCanvas;
 var cubicGraphics;
 var cubicPoints;
-var cubicCurves = [];
-var activeCubicIndex = 0;
+var cubicPointsInactive = [];
 
 var cubicHideSelect;
 var lockSelect;
@@ -38,10 +37,7 @@ var pixelSnap=precisionSnap * pixelsUnit;
 
 var xmin,xmax,ymin,ymax;
 
-var tangentColors = ["DarkBlue","DarkRed","DarkGreen","OrangeRed","MediumVioletRed"];
-
-var cubicColors = ["black","DarkBlue","DarkRed","DarkGreen","OrangeRed","MediumVioletRed"];
-var functionNames = ["f","g","h","i","j"]
+var colors = ["DarkBlue","DarkRed","DarkGreen","OrangeRed","MediumVioletRed"]
 
 var space = ""
 //var cubicColors = ["black","blue","#880000","#888888"]; // curve, aux control points, tangent, unlocked tangents
@@ -61,7 +57,7 @@ function drawPrint() {
 	printTikzCode();
 }
 
-function cubicDrawCurve(listOfPoints) {
+function cubicDrawCurve(listOfPoints,listOfColors) {
 	// Control Points
 	var i;
     if ( ! cubicHideSelect.checked ) {
@@ -165,14 +161,12 @@ function cubicDraw() {
 		cubicGraphics.fillText(j,cubicCanvasWidth/2+pixelsUnit*j,cubicCanvasHeight/2+18);
 		cubicGraphics.fillText(j,cubicCanvasWidth/2-14,cubicCanvasHeight/2-pixelsUnit*j+8);
 	}
-	cubicGraphics.globalAlpha = 0.25;
-	for (var j=0;j < cubicCurves.length;j++) {
-		if ( j != activeCubicIndex ) {
-			cubicDrawCurve(cubicCurves[j]);
-		}
+	if ( cubicPointsInactive.length > 0 ) {
+		cubicGraphics.globalAlpha = 0.25;
+		cubicDrawCurve(cubicPointsInactive);
+		cubicGraphics.globalAlpha = 1.0;
 	}
-	cubicGraphics.globalAlpha = 1.0;
-	cubicDrawCurve(cubicCurves[activeCubicIndex]);
+	cubicDrawCurve(cubicPoints);
 }
 
 function disk( graphics, x, y, radius ) {
@@ -220,19 +214,21 @@ function max(L) {
 }
 
 function setLimits() {
-	var listX = [];
-	var listY = [];
-	for ( var i = 0 ; i < cubicCurves.length ; i++ ) {
-		listX.push(cubicCurves[i][0].x);
-		listY.push(cubicCurves[i][0].y);
+	if ( cubicPointsInactive.length == 0 ) {
+		xmin=cubicPoints[0].x;
+		xmax=cubicPoints[0].x;
+		ymin=cubicPoints[0].y;
+		ymax=cubicPoints[0].y;	
 	}
-	xmin = min(listX);
-	xmax = max(listX);
-	ymin = min(listY);
-	ymax = max(listY);
+	else {
+		xmin=min([cubicPoints[0].x,cubicPointsInactive[0].x]);
+		xmax=max([cubicPoints[0].x,cubicPointsInactive[0].x]);
+		ymin=min([cubicPoints[0].y,cubicPointsInactive[0].y]);
+		ymax=max([cubicPoints[0].y,cubicPointsInactive[0].y]);
+	}
 	var samples = 3;
 	var samplePoint;
-	for (let listOfPoints of cubicCurves) {
+	for (let listOfPoints of [cubicPoints,cubicPointsInactive]) {
 		for (var i=3;i < listOfPoints.length;i=i+3) {
 			// Test the main point
 			var p=listOfPoints[i];
@@ -240,6 +236,7 @@ function setLimits() {
 			if (p.x > xmax) {xmax = p.x}
 			if (p.y > ymin) {ymin = p.y} // Inversion, not an error
 			if (p.y < ymax) {ymax = p.y}
+			console.log(convertX(xmin));
 			// Test samples
 			for (var j=1;j<samples+1;j++) {
 				samplePoint = bezierComputePoint(listOfPoints[i-3],listOfPoints[i-2],listOfPoints[i-1],p,j/(samples+1));
@@ -311,10 +308,10 @@ function generateDrawCommands(listOfPoints,functionName,curveColor) {
 				res = res + "\n"+space+"&#92draw[domain=&#92bezierXmin:&#92bezierXmax,line width=1pt";
 				if ( tikzTangentsColorsSelect.checked ) {
 					if ( functionName == "f" ) {
-						var col = tangentColors[(j/3-1) % tangentColors.length];
+						var col = colors[(j/3-1) % colors.length];
 					}
 					else {
-						var col = tangentColors[(j/3-1 + (cubicPoints.length-4)/3) % tangentColors.length];
+						var col = colors[(j/3-1 + (cubicPoints.length-4)/3) % colors.length];
 					}
 					res = res + ","+col;
 				}
@@ -361,15 +358,10 @@ function printTikzCode() {
 		}
 		res = res + "&#92tkzDrawX[right space=0pt,above left=4pt,font=&#92scriptsize] %Axe X\n\t&#92tkzDrawY[up space=0pt,below right=4pt,font=&#92scriptsize] %Axe Y\n\t&#92clip (&#92bezierXmin,&#92bezierYmin) rectangle (&#92bezierXmax,&#92bezierYmax);\n\t%\n\t% Courbes\n\t%\n\t";
 	}
-	for ( var i = 0 ; i < cubicCurves.length ; i++ ) {
-		res = res + "% Courbe de "+functionNames[i]+"\n"+space+generateDrawCommands(cubicPoints,functionNames[i],cubicColors[i]);
-		if (i < cubicCurves.length - 1) {
-			res = res + "\n"+space;
-		}
+	res = res + generateDrawCommands(cubicPoints,"f","black");
+	if (cubicPointsInactive.length > 0) {
+		res = res +"\n"+space+"% Courbe 2\n" + space + generateDrawCommands(cubicPointsInactive,"g","DarkBlue");
 	}
-	//if (cubicPointsInactive.length > 0) {
-	//	res = res +"\n"+space+"% Courbe 2\n" + space + generateDrawCommands(cubicPointsInactive,"g","DarkBlue");
-	//}
 	// End of the environement if selected
 	if ( tikzPreambleSelect.checked ) {
 		res = res + "\n&#92end{tikzpicture}";
@@ -430,25 +422,6 @@ function doCubicMouseDown(evt) {
             return;
         }
     }
-	for (var j=0 ; j < cubicCurves.length ; j++) {
-		for (var i = cubicCurves[j].length - 1; i >= 0; i--) {
-			var p = cubicCurves[j][i];
-			if (Math.abs(p.x - x) <= 5 && Math.abs(p.y - y) <= 5) {
-				changeActiveCurve(j);
-				cubicDraw();
-				draggingCubic = true;
-				if (evt.shiftKey) {
-					draggingCubicSpecial = true;
-				}
-				if (evt.ctrlKey) {
-					draggingCubicOnGrid = true;
-					setSnap();
-				}
-				dragPointIndex = i;
-				return;
-			}
-		}
-	}
 }
 
 function doCubicMouseDoubleClick(evt) {
@@ -628,27 +601,25 @@ function snapPoints() {
 	drawPrint();
 }
 
-function newCubic() {
-	if (cubicCurves.length < 6) {
-		cubicCurves.push([new Point2D(600-5*pixelsUnit,420-2*pixelsUnit),  new Point2D(600-4*pixelsUnit,420-3*pixelsUnit),
-		new Point2D(600-4*pixelsUnit,420-5*pixelsUnit), new Point2D(600-3*pixelsUnit,420-5*pixelsUnit), new Point2D(600-2*pixelsUnit,420-5*pixelsUnit),
-		new Point2D(600-pixelsUnit,420-pixelsUnit), new Point2D(600+pixelsUnit,420-pixelsUnit), new Point2D(600+3*pixelsUnit,420-pixelsUnit),
-		new Point2D(600+3*pixelsUnit,420-4*pixelsUnit), new Point2D(600+4*pixelsUnit,420-4*pixelsUnit)]);
+function swapCubicPoints() {
+	if ( cubicPointsInactive.length == 0 ) {
+		cubicPointsInactive = [new Point2D(600-5*pixelsUnit,420-2*pixelsUnit),  new Point2D(600-4*pixelsUnit,420-3*pixelsUnit),
+    new Point2D(600-4*pixelsUnit,420-5*pixelsUnit), new Point2D(600-3*pixelsUnit,420-5*pixelsUnit), new Point2D(600-2*pixelsUnit,420-5*pixelsUnit),
+    new Point2D(600-pixelsUnit,420-pixelsUnit), new Point2D(600+pixelsUnit,420-pixelsUnit), new Point2D(600+3*pixelsUnit,420-pixelsUnit),
+    new Point2D(600+3*pixelsUnit,420-4*pixelsUnit), new Point2D(600+4*pixelsUnit,420-4*pixelsUnit)];
 	}
+	var tempList = cubicPointsInactive;
+	cubicPointsInactive = cubicPoints;
+	cubicPoints = tempList;
 	drawPrint();
 }
 
-function changeActiveCurve(newIndex) {
-	activeCubicIndex = newIndex;
-	cubicPoints = cubicCurves[activeCubicIndex];
-}
-
 function resetCubicPoints() {
-	cubicCurves = [[new Point2D(600-5*pixelsUnit,420+pixelsUnit),  new Point2D(600-3*pixelsUnit,420+2*pixelsUnit),
+	cubicPoints = [new Point2D(600-5*pixelsUnit,420+pixelsUnit),  new Point2D(600-3*pixelsUnit,420+2*pixelsUnit),
     new Point2D(600-2*pixelsUnit,420-4*pixelsUnit), new Point2D(600-1*pixelsUnit,420-4*pixelsUnit), new Point2D(600,420-4*pixelsUnit),
     new Point2D(600-pixelsUnit,420+pixelsUnit), new Point2D(600+pixelsUnit,420+pixelsUnit), new Point2D(600+3*pixelsUnit,420+pixelsUnit),
-    new Point2D(600+3*pixelsUnit,420-3*pixelsUnit), new Point2D(600+4*pixelsUnit,420-2*pixelsUnit)]];
-	cubicPoints = cubicCurves[0];
+    new Point2D(600+3*pixelsUnit,420-3*pixelsUnit), new Point2D(600+4*pixelsUnit,420-2*pixelsUnit)];
+	cubicPointsInactive = [];
 	snapPoints();
 }
 
@@ -781,11 +752,11 @@ Des exemples de courbes générées par cet outil sont disponibles <a href="/exe
 </p>
 
 <p style="font-weight: bold">
-<input type="button" value="Ajouter une courbe (max 5)" id="swapCubic" onClick="newCubic()" style="float:left;margin-right:0.5cm">
+<input type="button" value="Ajouter/changer de courbe" id="swapCubic" onClick="swapCubicPoints()" style="float:left;margin-right:0.5cm">
 <input type="checkbox" id="cubicHide"> <label for="cubicHide" style="margin-right:1cm">Cacher les contrôles</label>
 <input type="hidden" id="precision"> <label for="precision" style="margin-right:0cm"><!--Mode une décimale--></label>
 <input type="checkbox" id="smartInsertion"> <label for="smartInsertion" style="margin-right:1cm">Insertion intelligente (compare les abscisses)</label>
-<input type="checkbox" id="lock"> <label for="lock" style="margin-right:0cm">Verrouiller les paires de points de contrôle</label>
+<input type="checkbox" id="lock"> <label for="lock" style="margin-right:1cm">Verrouiller les paires de points de contrôle</label>
 <input type="button" value="Réinitialiser" id="reset" onClick="resetCubicPoints()" style="float:right;">
 </p>
 
@@ -823,7 +794,7 @@ Des exemples de courbes générées par cet outil sont disponibles <a href="/exe
 
 <textarea id="tikzInput" rows="5" style="width:100%; background-color:white; padding:5px; border-color:black; border:1px solid; font-size: 12px;"> </textarea>
 
-<p style="font-style=italic; margin-top:1cm;"> v1.5 - Basé sur <a href="https://math.hws.edu/eck/cs424/notes2013/canvas/bezier.html">Bezier Curve Demos</a> - Intégration Tikz et ajout de fonctionnalités par moi </p>
+<p style="font-style=italic; margin-top:1cm;"> v1.4exp - Basé sur <a href="https://math.hws.edu/eck/cs424/notes2013/canvas/bezier.html">Bezier Curve Demos</a> - Intégration Tikz et ajout de fonctionnalités par moi </p>
 
 <!--
 v1.0 - Lancement
@@ -833,8 +804,6 @@ v1.3 - Import tikz
 v1.3a - Détermination plus fidèle des limites du repère
 v1.3b - Mode une décimale forcé par défaut
 v1.3c - Précision avec ctrl et bouton réinitialiser
-v1.4exp - Ajout d'une seconde courbe
-v1.5 - Jusqu'à 5 courbes, meilleure gestion
 --!>
 
 </body>
