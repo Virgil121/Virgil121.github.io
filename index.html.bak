@@ -324,7 +324,7 @@ function doLock() {
 
 var draggingCubic = false;
 var draggingCubicSpecial=false;
-var draggingQuad = false;
+var draggingCubicOnGrid = false;
 var dragPointIndex;
 
 function doMouseUp(evt) {
@@ -333,10 +333,12 @@ function doMouseUp(evt) {
 	}
     draggingCubic = false;
 	draggingCubicSpecial = false;
+	draggingCubicOnGrid = false;
+	setSnap();
 }
 
 function doCubicMouseDown(evt) {
-    if (draggingCubic || draggingQuad || cubicHideSelect.checked) {
+    if (draggingCubic || cubicHideSelect.checked) {
         return;
     }
     var r = cubicCanvas.getBoundingClientRect();
@@ -349,6 +351,10 @@ function doCubicMouseDown(evt) {
 			if (evt.shiftKey) {
 				draggingCubicSpecial = true;
 			}
+			if (evt.ctrlKey) {
+				draggingCubicOnGrid = true;
+				setSnap();
+			}
             dragPointIndex = i;
             return;
         }
@@ -356,7 +362,7 @@ function doCubicMouseDown(evt) {
 }
 
 function doCubicMouseDoubleClick(evt) {
-    if (draggingCubic || draggingQuad || cubicHideSelect.checked) {
+    if (draggingCubic || cubicHideSelect.checked) {
         return;
     }
 	var r = cubicCanvas.getBoundingClientRect();
@@ -409,6 +415,19 @@ function doCubicMouseDoubleClick(evt) {
 	}
 }
 
+function setSnap() {
+	if (draggingCubicOnGrid) {
+		precisionSnap=0.5;
+		invPrecisionSnap=2;
+		pixelSnap=precisionSnap * pixelsUnit;
+	}
+	else {
+		precisionSnap=0.1;
+		invPrecisionSnap=10;
+		pixelSnap=precisionSnap * pixelsUnit;
+	}
+}
+
 function doCubicMouseMove(evt) {
     if (!draggingCubic) {
         return;
@@ -416,6 +435,12 @@ function doCubicMouseMove(evt) {
     var r = cubicCanvas.getBoundingClientRect();
     var x = Math.round(evt.clientX - r.left);
     var y = Math.round(evt.clientY - r.top);
+	if ( evt.ctrlKey || draggingCubicOnGrid ) {
+		if ( ! draggingCubicOnGrid ) {
+			draggingCubicOnGrid = true;
+			setSnap();
+		}
+	}
 	if (precisionSelect.checked) {
 		var offsetX = Math.round((x - cubicPoints[dragPointIndex].x)/pixelSnap)*pixelSnap;
 		var offsetY = Math.round((y - cubicPoints[dragPointIndex].y)/pixelSnap)*pixelSnap;
@@ -452,8 +477,24 @@ function doCubicMouseMove(evt) {
 	else {
 		// Snap the point to align it with the precision
 		if ( precisionSelect.checked ) {
-			cubicPoints[dragPointIndex].x = pixelSnap*Math.round(cubicPoints[dragPointIndex].x/pixelSnap);
-			cubicPoints[dragPointIndex].y = pixelSnap*Math.round(cubicPoints[dragPointIndex].y/pixelSnap);
+			if ( dragPointIndex % 3 == 0 ) {
+				var snapOffsetX = cubicPoints[dragPointIndex].x;
+				var snapOffsetY = cubicPoints[dragPointIndex].y;
+				snapPoint(cubicPoints[dragPointIndex]);
+				snapOffsetX = cubicPoints[dragPointIndex].x - snapOffsetX;
+				snapOffsetY = cubicPoints[dragPointIndex].y - snapOffsetY;
+				if (dragPointIndex > 0) {
+					cubicPoints[dragPointIndex - 1].x += snapOffsetX;
+					cubicPoints[dragPointIndex - 1].y += snapOffsetY;
+				}
+				if (dragPointIndex < cubicPoints.length-1) {
+					cubicPoints[dragPointIndex + 1].x += snapOffsetX;
+					cubicPoints[dragPointIndex + 1].y += snapOffsetY;
+				}
+			}
+			else {
+				snapPoint(cubicPoints[dragPointIndex]);
+			}
 		}
 		cubicPoints[dragPointIndex].x += offsetX;
 		cubicPoints[dragPointIndex].y += offsetY;
@@ -483,14 +524,26 @@ function doCubicMouseMove(evt) {
     cubicDraw();
 }
 
+function snapPoint(p) {
+	p.x = pixelSnap*Math.round(p.x/pixelSnap);
+	p.y = pixelSnap*Math.round(p.y/pixelSnap);
+}
+
 function snapPoints() {
 	if ( precisionSelect.checked ) {
 		for (var j=0;j<cubicPoints.length;j++) {
-			cubicPoints[j].x = pixelSnap*Math.round(cubicPoints[j].x/pixelSnap);
-			cubicPoints[j].y = pixelSnap*Math.round(cubicPoints[j].y/pixelSnap);
+			snapPoint(cubicPoints[j]);
 		}
 	}
 	drawPrint();
+}
+
+function resetCubicPoints() {
+	cubicPoints = [new Point2D(600-5*pixelsUnit,420+pixelsUnit),  new Point2D(600-3*pixelsUnit,420+2*pixelsUnit),
+    new Point2D(600-2*pixelsUnit,420-4*pixelsUnit), new Point2D(600-1*pixelsUnit,420-4*pixelsUnit), new Point2D(600,420-4*pixelsUnit),
+    new Point2D(600-pixelsUnit,420+pixelsUnit), new Point2D(600+pixelsUnit,420+pixelsUnit), new Point2D(600+3*pixelsUnit,420+pixelsUnit),
+    new Point2D(600+3*pixelsUnit,420-3*pixelsUnit), new Point2D(600+4*pixelsUnit,420-2*pixelsUnit)];
+	snapPoints();
 }
 
 function init() {
@@ -549,13 +602,8 @@ function init() {
 	
 	textBox = document.getElementById("coordinates");
 	tikzInputBox = document.getElementById("tikzInput")
-    cubicPoints = [
-        new Point2D(600-5*pixelsUnit,420+pixelsUnit),  new Point2D(600-3*pixelsUnit,420+2*pixelsUnit),
-        new Point2D(600-2*pixelsUnit,420-4*pixelsUnit), new Point2D(600-1*pixelsUnit,420-4*pixelsUnit), new Point2D(600,420-4*pixelsUnit),
-        new Point2D(600-pixelsUnit,420+pixelsUnit), new Point2D(600+pixelsUnit,420+pixelsUnit), new Point2D(600+3*pixelsUnit,420+pixelsUnit),
-        new Point2D(600+3*pixelsUnit,420-3*pixelsUnit), new Point2D(600+4*pixelsUnit,420-2*pixelsUnit)
-    ];
-	snapPoints();
+    
+	resetCubicPoints();
     document.addEventListener("mouseup", doMouseUp, false);
     cubicCanvas.addEventListener("mousedown", doCubicMouseDown, false);
     cubicCanvas.addEventListener("mousemove", doCubicMouseMove, false);
@@ -619,18 +667,19 @@ Un clic droit -> Enregistrer l'image sous ou une capture d'écran sont aussi env
 Des exemples de courbes générées par cet outil sont disponibles <a href="https://virgil121.github.io/exemples.pdf">ici</a>.
 Pour insérer ou supprimer un point, il suffit de double-cliquer.
 <ul>
-<li> Le mode une décimale arrondit les coordonnées des points pour faciliter l'alignement. </li>
+<li> Les coordonnées sont arrondies au dixième. De plus, appuyer sur <b>Ctrl</b> avant ou pendant le déplacement d'un point permet de le positionner sur la grille, facilitant le placement dans des cas simples.</li>
 <li> Le mode intelligent permet d'insérer un nouveau point dans une courbe existente. Il ne fonctionne correctement que si les points de contrôle principaux (noirs) sont classés par abscisses croissantes (utile pour représenter des fonctions f:R -> R). S'il est désactivé, les nouveaux points sont ajoutés après le dernier. </li>
-<li> Appuyer sur Shift (Maj) avant ou pendant le déplacement d'un point de contrôle secondaire permet de le déplacer sur la tangente, permettant de garder une certaine régularité <!--(la courbe (R -> R²) n'est plus C1 mais la fonction associée (R -> R) le reste)--> tout en ayant un contrôle plus fin. </li>
-<li> (Déconseillé) On peut déverouiller les points de contrôle pour les ajuster indépendamment, mais la courbe sera alors moins régulière. </li>
+<li> Appuyer sur <b>Shift (Maj)</b> avant ou pendant le déplacement d'un point de contrôle secondaire permet de le déplacer sur la tangente, permettant de garder une certaine régularité <!--(la courbe (R -> R²) n'est plus C1 mais la fonction associée (R -> R) le reste)--> tout en ayant un contrôle plus fin. </li>
+<li> <i>(Déconseillé) On peut déverouiller les points de contrôle pour les ajuster indépendamment, mais la courbe sera alors moins régulière.</i> </li>
 </ul>
 </p>
 
 <p style="font-weight: bold">
 <input type="checkbox" id="cubicHide"> <label for="cubicHide" style="margin-right:1cm">Cacher les contrôles</label>
-<input type="checkbox" id="precision"> <label for="precision" style="margin-right:1cm">Mode une décimale</label>
+<input type="hidden" id="precision"> <label for="precision" style="margin-right:0cm"><!--Mode une décimale--></label>
 <input type="checkbox" id="smartInsertion"> <label for="smartInsertion" style="margin-right:1cm">Insertion intelligente (compare les abscisses)</label>
 <input type="checkbox" id="lock"> <label for="lock" style="margin-right:1cm">Verrouiller les paires de points de contrôle</label>
+<input type="button" value="Réinitialiser" id="reset" onClick="resetCubicPoints()" style="float:right;">
 </p>
 
 <canvas id="cubic" style="background-color: white; border: thin solid black"></canvas>
@@ -665,7 +714,7 @@ Pour insérer ou supprimer un point, il suffit de double-cliquer.
 
 <textarea id="tikzInput" rows="5" style="width:100%; background-color:white; padding:5px; border-color:black; border:1px solid; font-size: 12px;"> </textarea>
 
-<p style="font-style=italic; margin-top:1cm;"> v1.3 - Basé sur <a href="https://math.hws.edu/eck/cs424/notes2013/canvas/bezier.html">Bezier Curve Demos</a> - Intégration Tikz et ajout de fonctionnalités par moi </p>
+<p style="font-style=italic; margin-top:1cm;"> v1.3c - Basé sur <a href="https://math.hws.edu/eck/cs424/notes2013/canvas/bezier.html">Bezier Curve Demos</a> - Intégration Tikz et ajout de fonctionnalités par moi </p>
 
 <!--
 v1.0 - Lancement
@@ -673,6 +722,8 @@ v1.1 - Tangentes
 v1.2 - Couleurs des tangentes et ajustements
 v1.3 - Import tikz
 v1.3a - Détermination plus fidèle des limites du repère
+v1.3b - Mode une décimale forcé par défaut
+v1.3c - Précision avec ctrl
 --!>
 
 </body>
