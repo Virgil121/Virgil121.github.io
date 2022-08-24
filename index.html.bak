@@ -172,17 +172,34 @@ function convertY(y) {
 	return (Math.round(1000*(cubicCanvasHeight/2-y)/pixelsUnit)/1000);
 }
 
+function bezierComputePoint(p0,p1,p2,p3,t) {
+	var newX = Math.pow(1-t,3)*p0.x+3*Math.pow(1-t,2)*t*p1.x+3*(1-t)*Math.pow(t,2)*p2.x + Math.pow(t,3) * p3.x;
+	var newY = Math.pow(1-t,3)*p0.y+3*Math.pow(1-t,2)*t*p1.y+3*(1-t)*Math.pow(t,2)*p2.y + Math.pow(t,3) * p3.y;
+	return (new Point2D(newX,newY));
+}
+
 function setLimits() {
 	xmin=cubicPoints[0].x;
 	xmax=cubicPoints[0].x;
 	ymin=cubicPoints[0].y;
 	ymax=cubicPoints[0].y;
+	var samples = 3;
+	var samplePoint;
 	for (var i=3;i < cubicPoints.length;i=i+3) {
+		// Test the main point
 		var p=cubicPoints[i];
 		if (p.x < xmin) {xmin = p.x}
 		if (p.x > xmax) {xmax = p.x}
 		if (p.y > ymin) {ymin = p.y} // Inversion, not an error
 		if (p.y < ymax) {ymax = p.y}
+		// Test samples
+		for (var j=1;j<samples+1;j++) {
+			samplePoint = bezierComputePoint(cubicPoints[i-3],cubicPoints[i-2],cubicPoints[i-1],p,j/(samples+1));
+			if (samplePoint.x < xmin) {xmin = samplePoint.x}
+			if (samplePoint.x > xmax) {xmax = samplePoint.x}
+			if (samplePoint.y > ymin) {ymin = samplePoint.y} // Inversion, not an error
+			if (samplePoint.y < ymax) {ymax = samplePoint.y}
+		}
 	}
 	xmin = Math.round((convertX(xmin) - 1));
 	xmax = Math.round((convertX(xmax) + 1));
@@ -316,7 +333,6 @@ function doMouseUp(evt) {
 	}
     draggingCubic = false;
 	draggingCubicSpecial = false;
-	console.log("test");
 }
 
 function doCubicMouseDown(evt) {
@@ -577,14 +593,6 @@ function importCubic() {
 	snapPoints();
 }
 
-function convertX(x) {
-	return (Math.round(1000*(x-cubicCanvasWidth/2)/pixelsUnit)/1000);
-}
-
-function convertY(y) {
-	return (Math.round(1000*(cubicCanvasHeight/2-y)/pixelsUnit)/1000);
-}
-
 // onClick="this.select();"
 
 </script>
@@ -632,7 +640,7 @@ Pour insérer ou supprimer un point, il suffit de double-cliquer.
 <h3> Environnement Tikz </h3>
 
 <p style="font-weight: bold">
-<input type="checkbox" id="tikzPreamble"> <label for="tikzPreamble" style="margin-right:1cm">Générer l'environnement tikzpicture entier (ajustements sur les limites du graphiques à prévoir)</label>
+<input type="checkbox" id="tikzPreamble"> <label for="tikzPreamble" style="margin-right:1cm">Générer l'environnement tikzpicture entier</label>
 <input type="checkbox" id="tikzLabels"> <label for="tikzLabels" style="margin-right:1cm">Graduations</label>
 <input type="checkbox" id="tikzSubGrid"> <label for="tikzSubGrid" style="margin-right:1cm">Sous-grille</label>
 </p>
@@ -658,6 +666,14 @@ Pour insérer ou supprimer un point, il suffit de double-cliquer.
 <textarea id="tikzInput" rows="5" style="width:100%; background-color:white; padding:5px; border-color:black; border:1px solid; font-size: 12px;"> </textarea>
 
 <p style="font-style=italic; margin-top:1cm;"> v1.3 - Basé sur <a href="https://math.hws.edu/eck/cs424/notes2013/canvas/bezier.html">Bezier Curve Demos</a> - Intégration Tikz et ajout de fonctionnalités par moi </p>
+
+<!--
+v1.0 - Lancement
+v1.1 - Tangentes
+v1.2 - Couleurs des tangentes et ajustements
+v1.3 - Import tikz
+v1.3a - Détermination plus fidèle des limites du repère
+--!>
 
 </body>
 </html>
