@@ -631,10 +631,11 @@ function snapPoints() {
 
 function newCubic() {
 	if (cubicCurves.length < 6) {
-		cubicCurves.push([new Point2D(600-5*pixelsUnit,420-2*pixelsUnit),  new Point2D(600-4*pixelsUnit,420-3*pixelsUnit),
-		new Point2D(600-4*pixelsUnit,420-5*pixelsUnit), new Point2D(600-3*pixelsUnit,420-5*pixelsUnit), new Point2D(600-2*pixelsUnit,420-5*pixelsUnit),
-		new Point2D(600-pixelsUnit,420-pixelsUnit), new Point2D(600+pixelsUnit,420-pixelsUnit), new Point2D(600+3*pixelsUnit,420-pixelsUnit),
-		new Point2D(600+3*pixelsUnit,420-4*pixelsUnit), new Point2D(600+4*pixelsUnit,420-4*pixelsUnit)]);
+		var l = cubicCurves.length;
+		cubicCurves.push([new Point2D(600-5*pixelsUnit,420-2*pixelsUnit+l*pixelsUnit),  new Point2D(600-4*pixelsUnit,420-3*pixelsUnit+l*pixelsUnit),
+		new Point2D(600-4*pixelsUnit,420-5*pixelsUnit+l*pixelsUnit), new Point2D(600-3*pixelsUnit,420-5*pixelsUnit+l*pixelsUnit), new Point2D(600-2*pixelsUnit,420-5*pixelsUnit+l*pixelsUnit),
+		new Point2D(600-pixelsUnit,420-pixelsUnit+l*pixelsUnit), new Point2D(600+pixelsUnit,420-pixelsUnit+l*pixelsUnit), new Point2D(600+3*pixelsUnit,420-pixelsUnit+l*pixelsUnit),
+		new Point2D(600+3*pixelsUnit,420-4*pixelsUnit+l*pixelsUnit), new Point2D(600+4*pixelsUnit,420-4*pixelsUnit+l*pixelsUnit)]);
 	}
 	drawPrint();
 }
@@ -825,7 +826,7 @@ Des exemples de courbes générées par cet outil sont disponibles <a href="/exe
 
 <textarea id="tikzInput" rows="5" style="width:100%; background-color:white; padding:5px; border-color:black; border:1px solid; font-size: 12px;"> </textarea>
 
-<p style="font-style=italic; margin-top:1cm;"> v1.5 - Basé sur <a href="https://math.hws.edu/eck/cs424/notes2013/canvas/bezier.html">Bezier Curve Demos</a> - Intégration Tikz et ajout de fonctionnalités par moi </p>
+<p style="font-style=italic; margin-top:1cm;"> v1.5a - Basé sur <a href="https://math.hws.edu/eck/cs424/notes2013/canvas/bezier.html">Bezier Curve Demos</a> - Intégration Tikz et ajout de fonctionnalités par moi </p>
 
 <!--
 v1.0 - Lancement

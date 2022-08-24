@@ -631,10 +631,11 @@ function snapPoints() {
 
 function newCubic() {
 	if (cubicCurves.length < 6) {
-		cubicCurves.push([new Point2D(600-5*pixelsUnit,420-2*pixelsUnit),  new Point2D(600-4*pixelsUnit,420-3*pixelsUnit),
-		new Point2D(600-4*pixelsUnit,420-5*pixelsUnit), new Point2D(600-3*pixelsUnit,420-5*pixelsUnit), new Point2D(600-2*pixelsUnit,420-5*pixelsUnit),
-		new Point2D(600-pixelsUnit,420-pixelsUnit), new Point2D(600+pixelsUnit,420-pixelsUnit), new Point2D(600+3*pixelsUnit,420-pixelsUnit),
-		new Point2D(600+3*pixelsUnit,420-4*pixelsUnit), new Point2D(600+4*pixelsUnit,420-4*pixelsUnit)]);
+		var l = cubicCurves.length;
+		cubicCurves.push([new Point2D(600-5*pixelsUnit,420-2*pixelsUnit+l*pixelsUnit),  new Point2D(600-4*pixelsUnit,420-3*pixelsUnit+l*pixelsUnit),
+		new Point2D(600-4*pixelsUnit,420-5*pixelsUnit+l*pixelsUnit), new Point2D(600-3*pixelsUnit,420-5*pixelsUnit+l*pixelsUnit), new Point2D(600-2*pixelsUnit,420-5*pixelsUnit+l*pixelsUnit),
+		new Point2D(600-pixelsUnit,420-pixelsUnit+l*pixelsUnit), new Point2D(600+pixelsUnit,420-pixelsUnit+l*pixelsUnit), new Point2D(600+3*pixelsUnit,420-pixelsUnit+l*pixelsUnit),
+		new Point2D(600+3*pixelsUnit,420-4*pixelsUnit+l*pixelsUnit), new Point2D(600+4*pixelsUnit,420-4*pixelsUnit+l*pixelsUnit)]);
 	}
 	drawPrint();
 }
@@ -745,6 +746,7 @@ function importCubic() {
 		importListOfPoints.push(new Point2D(Math.round(pixelsUnit * newX + cubicCanvasWidth/2),Math.round(-1 * pixelsUnit * newY + cubicCanvasHeight/2)))
 	}
 	cubicCurves[activeCubicIndex] = importListOfPoints;
+	cubicPoints = cubicCurves[activeCubicIndex];
 	snapPoints();
 }
 
