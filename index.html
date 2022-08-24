@@ -362,6 +362,7 @@ function printTikzCode() {
 		res = res + "&#92tkzDrawX[right space=0pt,above left=4pt,font=&#92scriptsize] %Axe X\n\t&#92tkzDrawY[up space=0pt,below right=4pt,font=&#92scriptsize] %Axe Y\n\t&#92clip (&#92bezierXmin,&#92bezierYmin) rectangle (&#92bezierXmax,&#92bezierYmax);\n\t%\n\t% Courbes\n\t%\n\t";
 	}
 	for ( var i = 0 ; i < cubicCurves.length ; i++ ) {
+		console.log(i);
 		res = res + "% Courbe de "+functionNames[i]+"\n"+space+generateDrawCommands(cubicPoints,functionNames[i],cubicColors[i]);
 		if (i < cubicCurves.length - 1) {
 			res = res + "\n"+space;
@@ -743,7 +744,8 @@ function importCubic() {
 		newY = importPoint[1].slice(0,importPoint[1].length-1)*1;
 		importListOfPoints.push(new Point2D(Math.round(pixelsUnit * newX + cubicCanvasWidth/2),Math.round(-1 * pixelsUnit * newY + cubicCanvasHeight/2)))
 	}
-	cubicPoints = importListOfPoints;
+	cubicCurves[activeCubicIndex] = importListOfPoints;
+	cubicPoints = cubicCurves[activeCubicIndex];
 	snapPoints();
 }
 
@@ -763,7 +765,7 @@ Please use a newer version or a different browser.</p>
 <hr>
 <![endif]-->
 
-<h1 style="margin-top:0px">Editeur de courbes de Bezier avec export Tikz - Version expérimentale</h1>
+<h1 style="margin-top:0px">Editeur de courbes de Bezier avec export Tikz</h1>
 
 <p id="message" style="font-weight: bold"></p>
 
