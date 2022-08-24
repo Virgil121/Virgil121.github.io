@@ -664,9 +664,11 @@ Please use a newer version or a different browser.</p>
 <p>
 Cet outil permet de créer des courbes sur l'interface graphique ci-dessous en positionnant des points de passage et des tangentes, puis de les exporter en code tikz pour une intégration LaTeX. Le package <i>tkz-base</i> est requis pour créer le repère. <i>mathrsfs</i> est utilisé pour les labels sur les courbes.<br>
 Un clic droit -> Enregistrer l'image sous ou une capture d'écran sont aussi envisageables pour une utilisation avec Word.<br>
-Des exemples de courbes générées par cet outil sont disponibles <a href="https://virgil121.github.io/exemples.pdf">ici</a>.
-Pour insérer ou supprimer un point, il suffit de double-cliquer.
+Des exemples de courbes générées par cet outil sont disponibles <a href="https://virgil121.github.io/exemples.pdf">ici</a>.<br>
+Une version expérimentale permettant de créer deux courbes à la fois est disponible <a href="https://virgil121.github.io/deuxBezier.html">ici</a>. 
+
 <ul>
+<li> Pour insérer ou supprimer un point, il suffit de double-cliquer. </li>
 <li> Les coordonnées sont arrondies au dixième. De plus, appuyer sur <b>Ctrl</b> avant ou pendant le déplacement d'un point permet de le positionner sur la grille, facilitant le placement dans des cas simples.</li>
 <li> Le mode intelligent permet d'insérer un nouveau point dans une courbe existente. Il ne fonctionne correctement que si les points de contrôle principaux (noirs) sont classés par abscisses croissantes (utile pour représenter des fonctions f:R -> R). S'il est désactivé, les nouveaux points sont ajoutés après le dernier. </li>
 <li> Appuyer sur <b>Shift (Maj)</b> avant ou pendant le déplacement d'un point de contrôle secondaire permet de le déplacer sur la tangente, permettant de garder une certaine régularité <!--(la courbe (R -> R²) n'est plus C1 mais la fonction associée (R -> R) le reste)--> tout en ayant un contrôle plus fin. </li>
@@ -723,7 +725,7 @@ v1.2 - Couleurs des tangentes et ajustements
 v1.3 - Import tikz
 v1.3a - Détermination plus fidèle des limites du repère
 v1.3b - Mode une décimale forcé par défaut
-v1.3c - Précision avec ctrl
+v1.3c - Précision avec ctrl et bouton réinitialiser
 --!>
 
 </body>
