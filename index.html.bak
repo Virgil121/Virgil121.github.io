@@ -22,7 +22,8 @@ var tikzStartEndPointsSelect;
 var tikzCubicLabelSelect;
 var tikzTangentsSelect;
 var tikzTangentsColorsSelect;
-var textBox
+var textBox;
+var tikzInputBox;
 
 var cubicCanvasWidth=1200;
 var cubicCanvasHeight=840;
@@ -44,6 +45,11 @@ var colors = ["DarkBlue","DarkRed","DarkGreen","OrangeRed","MediumVioletRed"]
 function Point2D(x,y) {
     this.x = x;
     this.y = y;
+}
+
+function drawPrint() {
+	cubicDraw();
+	printTikzCode();
 }
 
 function cubicDraw() {
@@ -296,7 +302,7 @@ function doLock() {
 			cubicPoints[i-1].y = 2*cubicPoints[i].y - cubicPoints[i+1].y;
 		}
     }
-    cubicDraw();
+    drawPrint();
 }
 
 var draggingCubic = false;
@@ -305,10 +311,12 @@ var draggingQuad = false;
 var dragPointIndex;
 
 function doMouseUp(evt) {
+	if ( draggingCubic ) {
+		printTikzCode();
+	}
     draggingCubic = false;
 	draggingCubicSpecial = false;
-    draggingQuad = false;
-	printTikzCode();
+	console.log("test");
 }
 
 function doCubicMouseDown(evt) {
@@ -357,7 +365,7 @@ function doCubicMouseDoubleClick(evt) {
 				default:
 					cubicPoints.splice(i-1,3);
 			}
-			cubicDraw();
+			drawPrint();
             return;
         }
     }
@@ -372,16 +380,16 @@ function doCubicMouseDoubleClick(evt) {
 				else {
 					cubicPoints.splice(i-1,0,new Point2D(x-pixelsUnit,y), new Point2D(x,y), new Point2D(x+pixelsUnit,y));
 				}
-				cubicDraw();
+				drawPrint();
 				return;
 			}
 		}
 		cubicPoints.push(new Point2D(2*cubicPoints[l-1].x-cubicPoints[l-2].x,2*cubicPoints[l-1].y-cubicPoints[l-2].y), new Point2D(x-pixelsUnit,y), new Point2D(x,y));
-		cubicDraw();
+		drawPrint();
 	}
 	else {
 		cubicPoints.push(new Point2D(2*cubicPoints[l-1].x-cubicPoints[l-2].x,2*cubicPoints[l-1].y-cubicPoints[l-2].y), new Point2D(x-pixelsUnit,y), new Point2D(x,y));
-		cubicDraw();
+		drawPrint();
 	}
 }
 
@@ -466,8 +474,7 @@ function snapPoints() {
 			cubicPoints[j].y = pixelSnap*Math.round(cubicPoints[j].y/pixelSnap);
 		}
 	}
-	cubicDraw();
-	printTikzCode();
+	drawPrint();
 }
 
 function init() {
@@ -484,11 +491,14 @@ function init() {
     lockSelect = document.getElementById("lock");
     lockSelect.checked = true;
     lockSelect.onclick = doLock;
+	
 	precisionSelect = document.getElementById("precision");
 	precisionSelect.checked = true;
 	precisionSelect.onclick = function() { snapPoints(); };
+	
 	smartInsertionSelect = document.getElementById("smartInsertion");
 	smartInsertionSelect.checked = true;
+	
     cubicHideSelect = document.getElementById("cubicHide");
     cubicHideSelect.checked = false;
     cubicHideSelect.onclick = function() { cubicDraw(); };
@@ -496,26 +506,33 @@ function init() {
 	tikzPreambleSelect = document.getElementById("tikzPreamble");
 	tikzPreambleSelect.checked = true;
 	tikzPreambleSelect.onclick = function() { printTikzCode(); };
+	
 	tikzLabelsSelect = document.getElementById("tikzLabels");
 	tikzLabelsSelect.checked = true;
 	tikzLabelsSelect.onclick = function() { printTikzCode(); };
+	
 	tikzSubGridSelect = document.getElementById("tikzSubGrid");
 	tikzSubGridSelect.checked = true;
 	tikzSubGridSelect.onclick = function() { printTikzCode(); };
+	
 	tikzStartEndPointsSelect = document.getElementById("tikzStartEndPoints");
 	tikzStartEndPointsSelect.checked = false;
 	tikzStartEndPointsSelect.onclick = function() { printTikzCode(); };	
+	
 	tikzCubicLabelSelect = document.getElementById("tikzCubicLabel");
 	tikzCubicLabelSelect.checked = true;
 	tikzCubicLabelSelect.onclick = function() { printTikzCode(); };	
+	
 	tikzTangentsSelect = document.getElementById("tikzTangents");
 	tikzTangentsSelect.checked = false;
 	tikzTangentsSelect.onclick = function() { printTikzCode(); };
+	
 	tikzTangentsColorsSelect = document.getElementById("tikzTangentsColors");
 	tikzTangentsColorsSelect.checked = true;
 	tikzTangentsColorsSelect.onclick = function() { printTikzCode(); };
 	
 	textBox = document.getElementById("coordinates");
+	tikzInputBox = document.getElementById("tikzInput")
     cubicPoints = [
         new Point2D(600-5*pixelsUnit,420+pixelsUnit),  new Point2D(600-3*pixelsUnit,420+2*pixelsUnit),
         new Point2D(600-2*pixelsUnit,420-4*pixelsUnit), new Point2D(600-1*pixelsUnit,420-4*pixelsUnit), new Point2D(600,420-4*pixelsUnit),
@@ -523,13 +540,50 @@ function init() {
         new Point2D(600+3*pixelsUnit,420-3*pixelsUnit), new Point2D(600+4*pixelsUnit,420-2*pixelsUnit)
     ];
 	snapPoints();
-    cubicDraw();
-	printTikzCode();
     document.addEventListener("mouseup", doMouseUp, false);
     cubicCanvas.addEventListener("mousedown", doCubicMouseDown, false);
     cubicCanvas.addEventListener("mousemove", doCubicMouseMove, false);
 	cubicCanvas.addEventListener("dblclick", doCubicMouseDoubleClick, false);
 };
+
+function importCubic() {
+	var code = tikzInputBox.value;
+	var importListOfPoints = [];
+	var importCoords = [];
+	var importPoint = "";
+	var newX;
+	var newY;
+	for (var i=0;i<code.length;i++) {
+		if (code[i] == '(') {
+			importPoint = "";
+			while (code[i] != ')') {
+				importPoint += code[i];
+				i++;
+			}
+			importPoint += ')';
+			importCoords.push(importPoint);
+		}
+	}
+	if ( importCoords.length < 4 ) {
+		return;
+	}
+	for (var i=0;i<importCoords.length;i++) {
+		importPoint=importCoords[i].split(",");
+		newX = importPoint[0].slice(1)*1;
+		newY = importPoint[1].slice(0,importPoint[1].length-1)*1;
+		importListOfPoints.push(new Point2D(Math.round(pixelsUnit * newX + cubicCanvasWidth/2),Math.round(-1 * pixelsUnit * newY + cubicCanvasHeight/2)))
+	}
+	cubicPoints = importListOfPoints;
+	snapPoints();
+}
+
+function convertX(x) {
+	return (Math.round(1000*(x-cubicCanvasWidth/2)/pixelsUnit)/1000);
+}
+
+function convertY(y) {
+	return (Math.round(1000*(cubicCanvasHeight/2-y)/pixelsUnit)/1000);
+}
 
 // onClick="this.select();"
 
@@ -559,7 +613,7 @@ Pour insérer ou supprimer un point, il suffit de double-cliquer.
 <ul>
 <li> Le mode une décimale arrondit les coordonnées des points pour faciliter l'alignement. </li>
 <li> Le mode intelligent permet d'insérer un nouveau point dans une courbe existente. Il ne fonctionne correctement que si les points de contrôle principaux (noirs) sont classés par abscisses croissantes (utile pour représenter des fonctions f:R -> R). S'il est désactivé, les nouveaux points sont ajoutés après le dernier. </li>
-<li> Appuyer sur Shift (Maj) avant ou pendant le déplacement d'un point de contrôle secondaire permet de le déplacer sur la tangente, permettant de garder une certaine régularité tout en ayant un contrôle plus fin. </li>
+<li> Appuyer sur Shift (Maj) avant ou pendant le déplacement d'un point de contrôle secondaire permet de le déplacer sur la tangente, permettant de garder une certaine régularité <!--(la courbe (R -> R²) n'est plus C1 mais la fonction associée (R -> R) le reste)--> tout en ayant un contrôle plus fin. </li>
 <li> (Déconseillé) On peut déverouiller les points de contrôle pour les ajuster indépendamment, mais la courbe sera alors moins régulière. </li>
 </ul>
 </p>
@@ -597,7 +651,13 @@ Pour insérer ou supprimer un point, il suffit de double-cliquer.
 
 <textarea readonly id="coordinates" rows="30" style="width:100%; background-color:white; padding:5px; border-color:black; border:1px solid; font-size: 12px;"> </textarea>
 
-<p style="font-style=italic; margin-top:1cm;"> v1.1d - Basé sur <a href="https://math.hws.edu/eck/cs424/notes2013/canvas/bezier.html">Bezier Curve Demos</a> - Intégration Tikz et ajout de fonctionnalités par moi </p>
+<h2> Import Tikz </h2>
+
+<input type="button" value="Importer la courbe (ligne \draw ... uniquement)" onClick="importCubic()">
+
+<textarea id="tikzInput" rows="5" style="width:100%; background-color:white; padding:5px; border-color:black; border:1px solid; font-size: 12px;"> </textarea>
+
+<p style="font-style=italic; margin-top:1cm;"> v1.3 - Basé sur <a href="https://math.hws.edu/eck/cs424/notes2013/canvas/bezier.html">Bezier Curve Demos</a> - Intégration Tikz et ajout de fonctionnalités par moi </p>
 
 </body>
 </html>
