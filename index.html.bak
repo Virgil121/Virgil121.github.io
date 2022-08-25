@@ -673,6 +673,7 @@ function deleteCurve() {
 	if ( cubicCurves.length > 1 ) {
 		cubicCurves.splice(activeCubicIndex,1);
 		changeActiveCurve(0);
+		printTikzCode();
 	}
 }
 
@@ -858,7 +859,7 @@ Des exemples de courbes générées par cet outil sont disponibles <a href="/exe
 
 <textarea id="tikzInput" rows="5" style="width:100%; background-color:white; padding:5px; border-color:black; border:1px solid; font-size: 12px;"> </textarea>
 
-<p style="font-style=italic; margin-top:1cm;"> v1.5d - Basé sur <a href="https://math.hws.edu/eck/cs424/notes2013/canvas/bezier.html">Bezier Curve Demos</a> - Intégration Tikz et ajout de fonctionnalités par moi </p>
+<p style="font-style=italic; margin-top:1cm;"> v1.5e - Basé sur <a href="https://math.hws.edu/eck/cs424/notes2013/canvas/bezier.html">Bezier Curve Demos</a> - Intégration Tikz et ajout de fonctionnalités par moi </p>
 
 <!--
 v1.0 - Lancement
@@ -872,6 +873,12 @@ v1.4exp - Ajout d'une seconde courbe
 v1.5 - Jusqu'à 5 courbes, meilleure gestion
 v1.5c - Position automatique des labels
 v1.5d - Supprimer une courbe
+
+Idées:
+Option pgfplots
+Refaire le css
+Cookies
+couleurs+style spécifiés par l'utilisateur + cookie
 --!>
 
 </body>
