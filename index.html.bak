@@ -265,6 +265,8 @@ function pointToStr(point) {
 var directions = [[200,0],[141,-141],[0,-200],[-141,-141],[-200,0],[-141,141],[0,200],[141,141]]; // 8 principal directions
 var directionsTikz = ["right","above right","above","above left","left","below left","below","below right"]; // Inverted directions for the y axis
 
+var numGlobalTangent;
+
 function generateDrawCommands(listOfPoints,functionName,curveColor) {
 	var res = "";
 	var l = listOfPoints.length;
@@ -383,7 +385,7 @@ function printTikzCode() {
 		}
 		res = res + "&#92tkzDrawX[right space=0pt,above left=4pt,font=&#92scriptsize] %Axe X\n\t&#92tkzDrawY[up space=0pt,below right=4pt,font=&#92scriptsize] %Axe Y\n\t&#92clip (&#92bezierXmin,&#92bezierYmin) rectangle (&#92bezierXmax,&#92bezierYmax);\n\t%\n\t% Courbes\n\t%\n\t";
 	}
-	var numGlobalTangent = 0;
+	numGlobalTangent = 0;
 	for ( var i = 0 ; i < cubicCurves.length ; i++ ) {
 		res = res + "% Courbe de "+functionNames[i]+"\n"+space+generateDrawCommands(cubicCurves[i],functionNames[i],cubicColors[i]);
 		if (i < cubicCurves.length - 1) {
