@@ -336,12 +336,8 @@ function generateDrawCommands(listOfPoints,functionName,curveColor) {
 				b = Math.round(b * 1000)/1000;
 				res = res + "\n"+space+"&#92draw[domain=&#92bezierXmin:&#92bezierXmax,line width=1pt";
 				if ( tikzTangentsColorsSelect.checked ) {
-					if ( functionName == "f" ) {
-						var col = tangentColors[(j/3-1) % tangentColors.length];
-					}
-					else {
-						var col = tangentColors[(j/3-1 + (cubicPoints.length-4)/3) % tangentColors.length];
-					}
+					var col = tangentColors[numGlobalTangent % tangentColors.length];
+					numGlobalTangent = numGlobalTangent + 1;
 					res = res + ","+col;
 				}
 				res = res + "] plot (&#92x,{"+a1.toString()+"/"+a2.toString()+"*&#92x";
@@ -387,6 +383,7 @@ function printTikzCode() {
 		}
 		res = res + "&#92tkzDrawX[right space=0pt,above left=4pt,font=&#92scriptsize] %Axe X\n\t&#92tkzDrawY[up space=0pt,below right=4pt,font=&#92scriptsize] %Axe Y\n\t&#92clip (&#92bezierXmin,&#92bezierYmin) rectangle (&#92bezierXmax,&#92bezierYmax);\n\t%\n\t% Courbes\n\t%\n\t";
 	}
+	var numGlobalTangent = 0;
 	for ( var i = 0 ; i < cubicCurves.length ; i++ ) {
 		res = res + "% Courbe de "+functionNames[i]+"\n"+space+generateDrawCommands(cubicCurves[i],functionNames[i],cubicColors[i]);
 		if (i < cubicCurves.length - 1) {
@@ -654,7 +651,7 @@ function snapPoints() {
 }
 
 function newCubic() {
-	if (cubicCurves.length < 6) {
+	if (cubicCurves.length < 5) {
 		var l = cubicCurves.length;
 		cubicCurves.push([new Point2D(600-5*pixelsUnit,420-2*pixelsUnit+l*pixelsUnit),  new Point2D(600-4*pixelsUnit,420-3*pixelsUnit+l*pixelsUnit),
 		new Point2D(600-4*pixelsUnit,420-5*pixelsUnit+l*pixelsUnit), new Point2D(600-3*pixelsUnit,420-5*pixelsUnit+l*pixelsUnit), new Point2D(600-2*pixelsUnit,420-5*pixelsUnit+l*pixelsUnit),
@@ -859,7 +856,7 @@ Des exemples de courbes générées par cet outil sont disponibles <a href="/exe
 
 <textarea id="tikzInput" rows="5" style="width:100%; background-color:white; padding:5px; border-color:black; border:1px solid; font-size: 12px;"> </textarea>
 
-<p style="font-style=italic; margin-top:1cm;"> v1.5c - Basé sur <a href="https://math.hws.edu/eck/cs424/notes2013/canvas/bezier.html">Bezier Curve Demos</a> - Intégration Tikz et ajout de fonctionnalités par moi </p>
+<p style="font-style=italic; margin-top:1cm;"> v1.5d - Basé sur <a href="https://math.hws.edu/eck/cs424/notes2013/canvas/bezier.html">Bezier Curve Demos</a> - Intégration Tikz et ajout de fonctionnalités par moi </p>
 
 <!--
 v1.0 - Lancement
@@ -872,6 +869,7 @@ v1.3c - Précision avec ctrl et bouton réinitialiser
 v1.4exp - Ajout d'une seconde courbe
 v1.5 - Jusqu'à 5 courbes, meilleure gestion
 v1.5c - Position automatique des labels
+v1.5d - Supprimer une courbe
 --!>
 
 </body>
