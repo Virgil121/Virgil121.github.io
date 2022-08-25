@@ -1,5 +1,5 @@
 <!DOCTYPE html> 
-<html style="background-color:lightgray">
+<html>
 <head>
 <meta charset="UTF-8">
 <title>Bezier vers Tikz</title>
@@ -274,16 +274,16 @@ function generateDrawCommands(listOfPoints,functionName,curveColor) {
 		return("");
 	}
 	// Curve start
-	res = res + "&#92draw[line width=1pt,"+curveColor+"] ";
+	res = res + "&#92draw[line width=1pt,"+curveColor+"] " + pointToStr(listOfPoints[0]);
 	for(var j=0;j<l-1;j=j+3) {
-		res=res + pointToStr(listOfPoints[j]);
-		if ( j==3 && tikzStartEndPointsSelect.checked ) {
+		res = res + " .. controls " + pointToStr(listOfPoints[j+1]) + " and " + pointToStr(listOfPoints[j+2]) + " .. " + pointToStr(listOfPoints[j+3]) ;
+		if ( j==0 && tikzStartEndPointsSelect.checked ) {
 			res = res + " node[pos=0,circle,fill,inner sep=0.8pt] {}";
 		}
-		res = res + " .. controls " + pointToStr(listOfPoints[j+1]) + " and " + pointToStr(listOfPoints[j+2]);
-		res = res + " .. ";
+		if (j < l-4) {
+			res = res + "\n"+space+" ".repeat(23+curveColor.length + pointToStr(listOfPoints[0]).length);
+		}
 	}
-	res = res + pointToStr(listOfPoints[l-1]);
 	if ( tikzCubicLabelSelect.checked ) {
 		// Try to find the optimal position of the label
 		var tanX = ( listOfPoints[l-1].x + listOfPoints[l-2].x - listOfPoints[l-3].x - listOfPoints[l-4].x ); // * 3/4
@@ -786,8 +786,26 @@ function importCubic() {
 // onClick="this.select();"
 
 </script>
+
+<style>
+
+html {background-color: #E3E3E3}
+body {background-color: #F9F9F9; width:1200px; margin:0px auto; padding:30px;}
+
+h1 { text-align:center;<-color:#B74126;-> margin-top:0px;margin-top:0px;}
+h2 { margin-left: 1cm; font-weight: bold;<-color: #D44B2B;->font-family: ;border-color: #D44B2B;background: none;}
+h3 { margin-left: 2cm;<-color:#991c00;-> margin-left:15px; padding-bottom:0.2rem; margin-bottom:0.2rem; margin-right:10px; padding-left:10px }
+h4 { <-color:#801700;-> margin-left:50px; font-size:1rem }
+p { text-align:justify }
+li { text-align:justify }
+
+.boutonrouge { float:right;background-color:#CC4444;color:#FFFFFF;}
+.boutonrouge:hover { background-color:#991111;}
+.options { font-weight:bold; }
+
+</style>
 </head>
-<body onload="init()" style="background-color: ivory; width:1200px; margin:0px auto; padding:30px;">
+<body onload="init()">
 
 <noscript><p style="color:red">Sorry, this page requires JavaScript to run.</p></noscript>
 
@@ -799,7 +817,7 @@ Please use a newer version or a different browser.</p>
 <hr>
 <![endif]-->
 
-<h1 style="margin-top:0px">Editeur de courbes de Bezier avec export Tikz</h1>
+<h1>Editeur de courbes de Bezier avec export Tikz</h1>
 
 <p id="message" style="font-weight: bold"></p>
 
@@ -816,14 +834,14 @@ Des exemples de courbes générées par cet outil sont disponibles <a href="/exe
 </ul>
 </p>
 
-<p style="font-weight: bold">
+<p class="options">
 <input type="button" value="Ajouter une courbe" id="swapCubic" onClick="newCubic()" style="float:left;margin-right:0.25cm">
 <input type="checkbox" id="cubicHide"> <label for="cubicHide" style="margin-right:0.25cm">Cacher les contrôles</label>
 <input type="hidden" id="precision"> <label for="precision" style="margin-right:0cm"><!--Mode une décimale--></label>
 <input type="checkbox" id="smartInsertion"> <label for="smartInsertion" style="margin-right:0.25cm">Insertion intelligente (compare les abscisses)</label>
 <input type="checkbox" id="lock"> <label for="lock" style="margin-right:0cm">Verrouiller les paires de points de contrôle</label>
-<input type="button" value="Réinitialiser" id="reset" onClick="if(confirm('Confirmer la réinitialisation?')){resetCubicPoints();}" style="float:right;background-color:#DD5555;color:#EEEEEE;">
-<input type="button" value="Supprimer la courbe" id="reset" onClick="deleteCurve()" style="float:right;margin-right:0.2cm;background-color:#DD5555;color:#EEEEEE;">
+<input class="boutonrouge" type="button" value="Réinitialiser" id="reset" onClick="if(confirm('Confirmer la réinitialisation?')){resetCubicPoints();}">
+<input class="boutonrouge" type="button" value="Supprimer la courbe" id="reset" onClick="deleteCurve()" style="margin-right:0.2cm;">
 </p>
 
 <canvas id="cubic" style="background-color: white; border: thin solid black"></canvas>
@@ -832,7 +850,7 @@ Des exemples de courbes générées par cet outil sont disponibles <a href="/exe
 
 <h3> Environnement Tikz </h3>
 
-<p style="font-weight: bold">
+<p class="options">
 <input type="checkbox" id="tikzPreamble"> <label for="tikzPreamble" style="margin-right:1cm">Générer l'environnement tikzpicture entier</label>
 <input type="checkbox" id="tikzLabels"> <label for="tikzLabels" style="margin-right:1cm">Graduations</label>
 <input type="checkbox" id="tikzSubGrid"> <label for="tikzSubGrid" style="margin-right:1cm">Sous-grille</label>
@@ -840,12 +858,12 @@ Des exemples de courbes générées par cet outil sont disponibles <a href="/exe
 
 <h3> Propriétés de la courbe </h3>
 
-<p style="font-weight: bold">
+<p class="options">
 <input type="checkbox" id="tikzStartEndPoints"> <label for="tikzStartEndPoints" style="margin-right:1cm">Insérer des points aux extrémités des courbes</label>
 <input type="checkbox" id="tikzCubicLabel"> <label for="tikzCubicLabel" style="margin-right:1cm">Insérer un label sur la dernière portion des courbes</label>
 </p>
 
-<p style="font-weight: bold">
+<p class="options">
 <input type="checkbox" id="tikzTangents"> <label for="tikzTangents" style="margin-right:1cm">Afficher les tangentes (non verticales uniquement)</label>
 <input type="checkbox" id="tikzTangentsColors"> <label for="tikzTangentsColors" style="margin-right:1cm">Colorer les courbes ([svgnames]xcolor requis)</label>
 </p>
@@ -860,7 +878,7 @@ Des exemples de courbes générées par cet outil sont disponibles <a href="/exe
 
 <textarea id="tikzInput" rows="5" style="width:100%; background-color:white; padding:5px; border-color:black; border:1px solid; font-size: 12px;"> </textarea>
 
-<p style="font-style=italic; margin-top:1cm;"> v1.5e - Basé sur <a href="https://math.hws.edu/eck/cs424/notes2013/canvas/bezier.html">Bezier Curve Demos</a> - Intégration Tikz et ajout de fonctionnalités par moi </p>
+<p style="font-style=italic; margin-top:1cm;"> v1.5f - Basé sur <a href="https://math.hws.edu/eck/cs424/notes2013/canvas/bezier.html">Bezier Curve Demos</a> - Intégration Tikz et ajout de fonctionnalités par moi </p>
 
 <!--
 v1.0 - Lancement
@@ -874,6 +892,7 @@ v1.4exp - Ajout d'une seconde courbe
 v1.5 - Jusqu'à 5 courbes, meilleure gestion
 v1.5c - Position automatique des labels
 v1.5d - Supprimer une courbe
+v1.5f - Export amélioré
 
 Idées:
 Option pgfplots
