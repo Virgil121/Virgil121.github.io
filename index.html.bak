@@ -274,6 +274,9 @@ function generateDrawCommands(listOfPoints,functionName,curveColor) {
 		return("");
 	}
 	// Curve start
+	if (! tikzTangentsColorsSelect ) {
+		curveColor = "black";
+	}
 	res = res + "&#92draw[line width=1pt,"+curveColor+"] " + pointToStr(listOfPoints[0]);
 	for(var j=0;j<l-1;j=j+3) {
 		res = res + " .. controls " + pointToStr(listOfPoints[j+1]) + " and " + pointToStr(listOfPoints[j+2]) + " .. " + pointToStr(listOfPoints[j+3]) ;
@@ -892,6 +895,7 @@ v1.4exp - Ajout d'une seconde courbe
 v1.5 - Jusqu'à 5 courbes, meilleure gestion
 v1.5c - Position automatique des labels
 v1.5d - Supprimer une courbe
+v1.5f - Export amélioré
 
 Idées:
 Option pgfplots
