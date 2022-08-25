@@ -262,14 +262,18 @@ function pointToStr(point) {
 	return("("+x0.toString()+","+y0.toString()+")")
 }
 
+var directions = [[200,0],[141,-141],[0,-200],[-141,-141],[-200,0],[-141,141],[0,200],[141,141]]; // 8 principal directions
+var directionsTikz = ["right","above right","above","above left","left","below left","below","below right"]; // Inverted directions for the y axis
+
 function generateDrawCommands(listOfPoints,functionName,curveColor) {
 	var res = "";
-	if (listOfPoints.length == 0) {
+	var l = listOfPoints.length;
+	if (l == 0) {
 		return("");
 	}
 	// Curve start
 	res = res + "&#92draw[line width=1pt,"+curveColor+"] ";
-	for(var j=0;j<listOfPoints.length-1;j=j+3) {
+	for(var j=0;j<l-1;j=j+3) {
 		res=res + pointToStr(listOfPoints[j]);
 		if ( j==3 && tikzStartEndPointsSelect.checked ) {
 			res = res + " node[pos=0,circle,fill,inner sep=0.8pt] {}";
@@ -277,9 +281,31 @@ function generateDrawCommands(listOfPoints,functionName,curveColor) {
 		res = res + " .. controls " + pointToStr(listOfPoints[j+1]) + " and " + pointToStr(listOfPoints[j+2]);
 		res = res + " .. ";
 	}
-	res = res + pointToStr(listOfPoints[listOfPoints.length-1]);
+	res = res + pointToStr(listOfPoints[l-1]);
 	if ( tikzCubicLabelSelect.checked ) {
-		res = res + " node[font=&#92footnotesize,pos=0.5,above left] {$&#92mathscr C_"+functionName+"$}";
+		// Try to find the optimal position of the label
+		var tanX = ( listOfPoints[l-1].x + listOfPoints[l-2].x - listOfPoints[l-3].x - listOfPoints[l-4].x ); // * 3/4
+		var tanY = ( listOfPoints[l-1].y + listOfPoints[l-2].y - listOfPoints[l-3].y - listOfPoints[l-4].y );
+
+		var listOfScalarProducts = [];
+		var normalVector = [-tanY,tanX];
+		var secondX = ( listOfPoints[l-1].x - listOfPoints[l-2].x - listOfPoints[l-3].x + listOfPoints[l-4].x ); // * 3 - Compare this normal and the second derivative
+		var secondY = ( listOfPoints[l-1].y - listOfPoints[l-2].y - listOfPoints[l-3].y + listOfPoints[l-4].y );
+		if (-tanY * (secondX) + tanX * (secondY) < 0) { 
+			normalVector = [tanY,-tanX];
+		}
+		for (let el of directions) {
+			listOfScalarProducts.push(normalVector[0]*el[0]+normalVector[1]*el[1]);
+		}
+		var optimalDirection = directionsTikz[0];
+		var maxScalarProd = listOfScalarProducts[0];
+		for (var j = 1;j<8;j++) {
+			if (listOfScalarProducts[j] < maxScalarProd) {
+				maxScalarProd = listOfScalarProducts[j];
+				optimalDirection = directionsTikz[j];
+			}
+		}
+		res = res + " node[font=&#92footnotesize,pos=0.5,"+optimalDirection+"] {$&#92mathscr C_"+functionName+"$}";
 	}
 	if ( tikzStartEndPointsSelect.checked ) {
 		res = res + " node[pos=1,circle,fill,inner sep=0.8pt] {}";
@@ -288,7 +314,7 @@ function generateDrawCommands(listOfPoints,functionName,curveColor) {
 	// Tangents
 	if ( tikzTangentsSelect.checked ) {
 		res = res + "\n"+space+"% Tangentes";
-		for(var j=3;j<listOfPoints.length-2;j=j+3) {
+		for(var j=3;j<l-2;j=j+3) {
 			var p0 = listOfPoints[j];
 			var p1 = listOfPoints[j+1]
 			var a1 = (convertY(p1.y) - convertY(p0.y));
@@ -362,8 +388,7 @@ function printTikzCode() {
 		res = res + "&#92tkzDrawX[right space=0pt,above left=4pt,font=&#92scriptsize] %Axe X\n\t&#92tkzDrawY[up space=0pt,below right=4pt,font=&#92scriptsize] %Axe Y\n\t&#92clip (&#92bezierXmin,&#92bezierYmin) rectangle (&#92bezierXmax,&#92bezierYmax);\n\t%\n\t% Courbes\n\t%\n\t";
 	}
 	for ( var i = 0 ; i < cubicCurves.length ; i++ ) {
-		console.log(i);
-		res = res + "% Courbe de "+functionNames[i]+"\n"+space+generateDrawCommands(cubicPoints,functionNames[i],cubicColors[i]);
+		res = res + "% Courbe de "+functionNames[i]+"\n"+space+generateDrawCommands(cubicCurves[i],functionNames[i],cubicColors[i]);
 		if (i < cubicCurves.length - 1) {
 			res = res + "\n"+space;
 		}
@@ -808,7 +833,7 @@ Des exemples de courbes générées par cet outil sont disponibles <a href="/exe
 
 <p style="font-weight: bold">
 <input type="checkbox" id="tikzStartEndPoints"> <label for="tikzStartEndPoints" style="margin-right:1cm">Insérer des points aux extrémités des courbes</label>
-<input type="checkbox" id="tikzCubicLabel"> <label for="tikzCubicLabel" style="margin-right:1cm">Insérer un label sur la dernière portion des courbes (position à ajuster à la main)</label>
+<input type="checkbox" id="tikzCubicLabel"> <label for="tikzCubicLabel" style="margin-right:1cm">Insérer un label sur la dernière portion des courbes</label>
 </p>
 
 <p style="font-weight: bold">
@@ -826,7 +851,7 @@ Des exemples de courbes générées par cet outil sont disponibles <a href="/exe
 
 <textarea id="tikzInput" rows="5" style="width:100%; background-color:white; padding:5px; border-color:black; border:1px solid; font-size: 12px;"> </textarea>
 
-<p style="font-style=italic; margin-top:1cm;"> v1.5 - Basé sur <a href="https://math.hws.edu/eck/cs424/notes2013/canvas/bezier.html">Bezier Curve Demos</a> - Intégration Tikz et ajout de fonctionnalités par moi </p>
+<p style="font-style=italic; margin-top:1cm;"> v1.5b - Basé sur <a href="https://math.hws.edu/eck/cs424/notes2013/canvas/bezier.html">Bezier Curve Demos</a> - Intégration Tikz et ajout de fonctionnalités par moi </p>
 
 <!--
 v1.0 - Lancement
@@ -838,6 +863,7 @@ v1.3b - Mode une décimale forcé par défaut
 v1.3c - Précision avec ctrl et bouton réinitialiser
 v1.4exp - Ajout d'une seconde courbe
 v1.5 - Jusqu'à 5 courbes, meilleure gestion
+v1.5b - Position automatique des labels
 --!>
 
 </body>
