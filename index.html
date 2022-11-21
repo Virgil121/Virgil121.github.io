@@ -277,14 +277,14 @@ function generateDrawCommands(listOfPoints,functionName,curveColor) {
 	if (! tikzTangentsColorsSelect.checked ) {
 		curveColor = "black";
 	}
-	res = res + "&#92draw[line width=1pt,"+curveColor+"] " + pointToStr(listOfPoints[0]);
+	res = res + "&#92draw[line width=1pt,"+curveColor+"]\n" + space + "\t" + pointToStr(listOfPoints[0]);
 	for(var j=0;j<l-1;j=j+3) {
 		res = res + " .. controls " + pointToStr(listOfPoints[j+1]) + " and " + pointToStr(listOfPoints[j+2]) + " .. " + pointToStr(listOfPoints[j+3]) ;
 		if ( j==0 && tikzStartEndPointsSelect.checked ) {
 			res = res + " node[pos=0,circle,fill,inner sep=0.8pt] {}";
 		}
 		if (j < l-4) {
-			res = res + "\n"+space+" ".repeat(23+curveColor.length + pointToStr(listOfPoints[0]).length);
+			res = res + "\n"+space+"\t"+" ".repeat(pointToStr(listOfPoints[0]).length);
 		}
 	}
 	if ( tikzCubicLabelSelect.checked ) {
@@ -881,7 +881,7 @@ Des exemples de courbes générées par cet outil sont disponibles <a href="/exe
 
 <textarea id="tikzInput" rows="5" style="width:100%; background-color:white; padding:5px; border-color:black; border:1px solid; font-size: 12px;"> </textarea>
 
-<p style="font-style=italic; margin-top:1cm;"> v1.5f - Basé sur <a href="https://math.hws.edu/eck/cs424/notes2013/canvas/bezier.html">Bezier Curve Demos</a> - Intégration Tikz et ajout de fonctionnalités par moi </p>
+<p style="font-style=italic; margin-top:1cm;"> v1.5g - Basé sur <a href="https://math.hws.edu/eck/cs424/notes2013/canvas/bezier.html">Bezier Curve Demos</a> - Intégration Tikz et ajout de fonctionnalités par moi </p>
 
 <!--
 v1.0 - Lancement
@@ -895,7 +895,7 @@ v1.4exp - Ajout d'une seconde courbe
 v1.5 - Jusqu'à 5 courbes, meilleure gestion
 v1.5c - Position automatique des labels
 v1.5d - Supprimer une courbe
-v1.5f - Export amélioré
+v1.5f+g - Export amélioré
 
 Idées:
 Option pgfplots
