@@ -13,16 +13,23 @@ var cubicPoints;
 var cubicCurves = [];
 var activeCubicIndex = 0;
 
+// Avoid errors with the shift precision mode (store the original points to keep the correct tangents)
+var cubicPointsPrecise;
+var cubicCurvesPrecise = [];
+
 var cubicHideSelect;
 var lockSelect;
 var precisionSelect;
 var smartInsertionSelect;
 var tikzPreambleSelect;
+var tikzCenterSelect;
 var tikzLabelsSelect;
 var tikzSubGridSelect;
+var tikzPgfplotsSelect;
 var tikzStartEndPointsSelect;
 var tikzCubicLabelSelect;
 var tikzTangentsSelect;
+var tikzTangentsPointsSelect;
 var tikzTangentsColorsSelect;
 var textBox;
 var tikzInputBox;
@@ -38,7 +45,8 @@ var pixelSnap=precisionSnap * pixelsUnit;
 
 var xmin,xmax,ymin,ymax;
 
-var tangentColors = ["DarkBlue","DarkRed","DarkGreen","OrangeRed","MediumVioletRed"];
+var tangentColors = ["DarkBlue","DarkRed","DarkGreen","OrangeRed","MediumVioletRed"]; // densely dashed, densely dotted, dash pattern={on 2pt off 2pt on 6pt off 2pt}
+var tangentPointsColors = ["blue","red","green","OrangeRed","MediumVioletRed"];
 
 var cubicColors = ["black","DarkBlue","DarkRed","DarkGreen","OrangeRed","MediumVioletRed"];
 var functionNames = ["f","g","h","i","j"]
@@ -267,7 +275,11 @@ var directionsTikz = ["right","above right","above","above left","left","below l
 
 var numGlobalTangent;
 
-function generateDrawCommands(listOfPoints,functionName,curveColor) {
+function generateDrawCommands(i) {
+	var listOfPoints = cubicCurves[i];
+	var listOfPointsPrecise = cubicCurvesPrecise[i];
+	var functionName = functionNames[i];
+	var curveColor = cubicColors[i];
 	var res = "";
 	var l = listOfPoints.length;
 	if (l == 0) {
@@ -320,36 +332,68 @@ function generateDrawCommands(listOfPoints,functionName,curveColor) {
 	if ( tikzTangentsSelect.checked ) {
 		res = res + "\n"+space+"% Tangentes";
 		for(var j=3;j<l-2;j=j+3) {
-			var p0 = listOfPoints[j];
-			var p1 = listOfPoints[j+1]
+			var p0 = listOfPointsPrecise[j];
+			var p1 = listOfPointsPrecise[j+1]
 			var a1 = (convertY(p1.y) - convertY(p0.y));
 			var a2 = (convertX(p1.x) - convertX(p0.x));
 			if ( a2 < 0 ) {
 				a1 = -1 * a1;
 				a2 = -1 * a2;
 			}
-			if ( precisionSelect.checked ) {
-				a1 = Math.round(a1 * invPrecisionSnap ) / invPrecisionSnap;
-				a2 = Math.round(a2 * invPrecisionSnap) / invPrecisionSnap;
-			}
-			else {
-				a1 = Math.round(a1 * 1000) / 1000;
-				a2 = Math.round(a2 * 1000) / 1000;			
-			}
+			// if ( precisionSelect.checked ) {
+			// 	a1 = Math.round(a1 * invPrecisionSnap ) / invPrecisionSnap;
+			// 	a2 = Math.round(a2 * invPrecisionSnap) / invPrecisionSnap;
+			// }
+			// else {
+			// Tangents need to be precise
+			a1 = Math.round(a1 * 1000) / 1000;
+			a2 = Math.round(a2 * 1000) / 1000;			
+			// }
 			if ( a2 != 0 ) {
 				var b = convertY(p1.y) - a1 / a2 * convertX(p1.x);
 				b = Math.round(b * 1000)/1000;
-				res = res + "\n"+space+"&#92draw[domain=&#92bezierXmin:&#92bezierXmax,line width=1pt";
+				var stylepoint="stylepoint";
+				if ( ! tikzPgfplotsSelect.checked ) {
+					stylepoint="draw=black,circle,fill,inner sep=1.2pt,semithick";
+				}
+				if (tikzTangentsPointsSelect.checked) {
+					if (tikzTangentsColorsSelect.checked) {
+						res = res + "\n"+space+"&#92draw "+pointToStr(p0)+" node["+stylepoint+",fill="+tangentPointsColors[numGlobalTangent % tangentColors.length]+"] {};";
+					}
+					else {
+						res = res + "\n"+space+"&#92draw "+pointToStr(p0)+" node["+stylepoint+",fill=black] {};";
+					}
+				}
+				if ( tikzPgfplotsSelect.checked ) {
+					res = res + "\n"+space+"&#92addplot[styleplot";
+				}
+				else {
+					res = res + "\n"+space+"&#92draw[domain=&#92bezierXmin:&#92bezierXmax,line width=1pt";
+				}
 				if ( tikzTangentsColorsSelect.checked ) {
 					var col = tangentColors[numGlobalTangent % tangentColors.length];
 					numGlobalTangent = numGlobalTangent + 1;
 					res = res + ","+col;
 				}
-				res = res + "] plot (&#92x,{"+a1.toString()+"/"+a2.toString()+"*&#92x";
-				if ( b > 0 ) {
-					res = res + "+";
+				if ( tikzPgfplotsSelect.checked ) {
+					res = res + "] {"+a1.toString()+"/"+a2.toString()+"*x";
 				}
-				res = res + b.toString()+"});";
+				else {
+					res = res + "] plot (&#92x,{"+a1.toString()+"/"+a2.toString()+"*&#92x";
+				}
+				
+				if ( b != 0 ) {
+					if ( b > 0 ) {
+						res = res + "+";
+					}
+					res = res + b.toString();
+				}
+				if ( tikzPgfplotsSelect.checked ) {
+					res = res +"};\n";
+				}
+				else {
+					res = res +"});\n";
+				}
 			}
 		}
 	}
@@ -362,35 +406,52 @@ function printTikzCode() {
 	//				 .. (3,4) .. controls (4,4) and (6,2.5) 
 	//				 .. (7,1) node[pos=0.3,above right] {$\mathscr C_1$} node[pos=1,stylepointextremites] {};
 	var res = "";
-	if ( tikzPreambleSelect.checked ) {
+	if ( tikzPreambleSelect.checked && !(tikzPgfplotsSelect.checked) ) { // Disable indent if pgfplots checked
 			space = "\t";
-			res = res + "\n\t%";
+			//res = res + "\n\t%";
 		}
 		else {
 			space = "";
 		}
 	// Tikz preamble
 	if ( tikzPreambleSelect.checked ) {
-		res = "&#92begin{tikzpicture}";
-		setLimits();
-		var xRange = xmax - xmin;
-		if ( xRange > 14 ) {
-			var scale = Math.round(1400 / xRange)/100;
-			res = res + "[scale="+scale.toString()+"]";
+		if ( tikzPgfplotsSelect.checked ) {
+			if ( tikzCenterSelect.checked ) {
+				res = "&#92begin{center}\n";
+			}
+			setLimits();
+			res = res + "&#92begin{tikzpicture}\n&#92begin{axis}[\nstyleglobal,\nwidth=0.9&#92linewidth,\nxmin="+xmin.toString()+", xmax="+xmax.toString()+",\nymin="+ymin.toString()+", ymax="+ymax.toString()+",";
+			if ( ! tikzSubGridSelect.checked ) {
+				res = res + "\nminor x tick num=0,\nminor y tick num=0,";
+			}
+			res=res+"\n]\n";
+			//res = res + "\n%\n% Courbes\n%\n";
 		}
-		res = res + "\n\t%\n\t% Limites du repère modifiables\n\t&#92def&#92bezierXmin{"+xmin.toString()+"}\n\t&#92def&#92bezierXmax{"+xmax.toString()+"}\n\t&#92def&#92bezierYmin{"+ymin.toString()+"}\n\t&#92def&#92bezierYmax{"+ymax.toString()+"}\n\t%\n\t% Grille\n\t"
-		if ( tikzSubGridSelect.checked ) {
-			res = res + "&#92draw[step=0.5,densely dashed,line width=0.25pt,draw=black!20] (&#92bezierXmin,&#92bezierYmin) grid (&#92bezierXmax,&#92bezierYmax);\n\t";
+		else {
+			if ( tikzCenterSelect.checked ) {
+				res = "&#92begin{center}\n";
+			}
+			res = res + "&#92begin{tikzpicture}";
+			setLimits();
+			var xRange = xmax - xmin;
+			if ( xRange > 14 ) {
+				var scale = Math.round(1400 / xRange)/100;
+				res = res + "[scale="+scale.toString()+"]";
+			}
+			res = res + "\n\t%\n\t% Limites du repère modifiables\n\t&#92def&#92bezierXmin{"+xmin.toString()+"}\n\t&#92def&#92bezierXmax{"+xmax.toString()+"}\n\t&#92def&#92bezierYmin{"+ymin.toString()+"}\n\t&#92def&#92bezierYmax{"+ymax.toString()+"}\n\t%\n\t% Grille\n\t"
+			if ( tikzSubGridSelect.checked ) {
+				res = res + "&#92draw[step=0.5,densely dashed,line width=0.25pt,draw=black!20] (&#92bezierXmin,&#92bezierYmin) grid (&#92bezierXmax,&#92bezierYmax);\n\t";
+			}
+			res = res + "&#92draw[step=1,densely dashed,line width=0.4pt,draw=black!30] (&#92bezierXmin,&#92bezierYmin) grid (&#92bezierXmax,&#92bezierYmax);\n\t%\n\t% Création des axes avec tkz-base\n\t&#92tkzInit[xmin=&#92bezierXmin,xmax=&#92bezierXmax,ymin=&#92bezierYmin,ymax=&#92bezierYmax]\n\t&#92tkzSetUpAxis[ticka=3.5pt,tickb=3.5pt]	%Taille graduations\n\t"
+			if ( tikzLabelsSelect.checked ) {
+				res = res + "&#92tkzLabelX[font=&#92scriptsize,orig=false,fill=none] % Graduations X \n\t&#92tkzLabelY[font=&#92scriptsize,orig=false,fill=none] % Graduations Y\n\t";
+			}
+			res = res + "&#92tkzDrawX[right space=0pt,above left=4pt,font=&#92scriptsize] %Axe X\n\t&#92tkzDrawY[up space=0pt,below right=4pt,font=&#92scriptsize] %Axe Y\n\t&#92clip (&#92bezierXmin,&#92bezierYmin) rectangle (&#92bezierXmax,&#92bezierYmax);\n\t%\n\t% Courbes\n\t%\n\t";
 		}
-		res = res + "&#92draw[step=1,densely dashed,line width=0.4pt,draw=black!30] (&#92bezierXmin,&#92bezierYmin) grid (&#92bezierXmax,&#92bezierYmax);\n\t%\n\t% Création des axes avec tkz-base\n\t&#92tkzInit[xmin=&#92bezierXmin,xmax=&#92bezierXmax,ymin=&#92bezierYmin,ymax=&#92bezierYmax]\n\t&#92tkzSetUpAxis[ticka=3.5pt,tickb=3.5pt]	%Taille graduations\n\t"
-		if ( tikzLabelsSelect.checked ) {
-			res = res + "&#92tkzLabelX[font=&#92scriptsize,orig=false,fill=none] % Graduations X \n\t&#92tkzLabelY[font=&#92scriptsize,orig=false,fill=none] % Graduations Y\n\t";
-		}
-		res = res + "&#92tkzDrawX[right space=0pt,above left=4pt,font=&#92scriptsize] %Axe X\n\t&#92tkzDrawY[up space=0pt,below right=4pt,font=&#92scriptsize] %Axe Y\n\t&#92clip (&#92bezierXmin,&#92bezierYmin) rectangle (&#92bezierXmax,&#92bezierYmax);\n\t%\n\t% Courbes\n\t%\n\t";
 	}
 	numGlobalTangent = 0;
 	for ( var i = 0 ; i < cubicCurves.length ; i++ ) {
-		res = res + "% Courbe de "+functionNames[i]+"\n"+space+generateDrawCommands(cubicCurves[i],functionNames[i],cubicColors[i]);
+		res = res + "% Courbe de "+functionNames[i]+"\n"+space+generateDrawCommands(i);
 		if (i < cubicCurves.length - 1) {
 			res = res + "\n"+space;
 		}
@@ -400,7 +461,13 @@ function printTikzCode() {
 	//}
 	// End of the environement if selected
 	if ( tikzPreambleSelect.checked ) {
+		if (tikzPgfplotsSelect.checked ) {
+			res = res + "\n&#92end{axis}";
+		}
 		res = res + "\n&#92end{tikzpicture}";
+		if ( tikzCenterSelect.checked ) {
+				res = res + "\n&#92end{center}";
+			}
 	}
 	textBox.innerHTML=res;
 }
@@ -411,6 +478,7 @@ function printTikzCode() {
 
 function doLock() {
     if ( lockSelect.checked ) {
+	snapPoints();
 		for (var i=3;i<=cubicPoints.length - 3;i=i+3) {
 			cubicPoints[i+1].x = 2*cubicPoints[i].x - cubicPoints[i-1].x;
 			cubicPoints[i+1].y = 2*cubicPoints[i].y - cubicPoints[i-1].y;
@@ -418,21 +486,28 @@ function doLock() {
 			cubicPoints[i-1].y = 2*cubicPoints[i].y - cubicPoints[i+1].y;
 		}
     }
+	for (var i=0;i < cubicPoints.length;i++) {
+		cubicPointsPrecise[i].x = cubicPoints[i].x;
+		cubicPointsPrecise[i].y = cubicPoints[i].y;
+	}
     drawPrint();
 }
 
 var draggingCubic = false;
 var draggingCubicSpecial=false;
 var draggingCubicOnGrid = false;
+var movementHappened = false;
 var dragPointIndex;
 
 function doMouseUp(evt) {
 	if ( draggingCubic ) {
 		printTikzCode();
+		updateCubicPointsPrecise();
 	}
     draggingCubic = false;
 	draggingCubicSpecial = false;
 	draggingCubicOnGrid = false;
+	movementHappened = false;
 	setSnap();
 }
 
@@ -478,6 +553,46 @@ function doCubicMouseDown(evt) {
 	}
 }
 
+function addPoint(listOfPoints,x,y) {
+	var l = listOfPoints.length;
+	if (smartInsertionSelect.checked) {
+		for (var i = 0; i < l; i=i+3) {
+			var p = listOfPoints[i];
+			if (p.x > x) {
+				if (i==0) {
+					listOfPoints.splice(0,0,new Point2D(x,y),new Point2D(x+pixelsUnit,y),new Point2D(2*listOfPoints[0].x-listOfPoints[1].x,2*listOfPoints[0].y-listOfPoints[1].y));
+				}
+				else {
+					listOfPoints.splice(i-1,0,new Point2D(x-pixelsUnit,y), new Point2D(x,y), new Point2D(x+pixelsUnit,y));
+				}
+				return;
+			}
+		}
+		listOfPoints.push(new Point2D(2*listOfPoints[l-1].x-listOfPoints[l-2].x,2*listOfPoints[l-1].y-listOfPoints[l-2].y), new Point2D(x-pixelsUnit,y), new Point2D(x,y));
+	}
+	else {
+		listOfPoints.push(new Point2D(2*listOfPoints[l-1].x-listOfPoints[l-2].x,2*listOfPoints[l-1].y-listOfPoints[l-2].y), new Point2D(x-pixelsUnit,y), new Point2D(x,y));
+	}
+}
+
+function deletePoint(listOfPoints,i) {
+	var l = listOfPoints.length;
+	// Cancel if there are not enough points
+	if ( l <= 4 ) {
+		return;
+	}
+	switch (i) {
+		case l-1:
+			listOfPoints.splice(l-3,3);
+			break;
+		case 0:
+			listOfPoints.splice(0,3);
+			break;
+		default:
+			listOfPoints.splice(i-1,3);
+	}
+    return;
+}
 function doCubicMouseDoubleClick(evt) {
     if (draggingCubic || cubicHideSelect.checked) {
         return;
@@ -485,51 +600,21 @@ function doCubicMouseDoubleClick(evt) {
 	var r = cubicCanvas.getBoundingClientRect();
     var x = Math.round((evt.clientX - r.left)/pixelSnap)*pixelSnap;
     var y = Math.round((evt.clientY - r.top)/pixelSnap)*pixelSnap;
-	var l = cubicPoints.length
+	var l = cubicPoints.length;
 	// Delete a point
 	for (var i = 0; i < l; i=i+3) {
         var p = cubicPoints[i];
-        if (Math.abs(p.x - x) <= 5 && Math.abs(p.y - y) <= 5) {
-			// Cancel if there are not enough points
-			if ( l <= 4 ) {
-				return;
-			}
-			switch (i) {
-				case l-1:
-					cubicPoints.splice(l-3,3);
-					break;
-				case 0:
-					cubicPoints.splice(0,3);
-					break;
-				default:
-					cubicPoints.splice(i-1,3);
-			}
+        if (Math.abs(p.x - x) <= 7 && Math.abs(p.y - y) <= 7) {
+			deletePoint(cubicPoints,i);
+			deletePoint(cubicPointsPrecise,i);
 			drawPrint();
-            return;
+			return;
         }
     }
-	// Create a point
-	if (smartInsertionSelect.checked) {
-		for (var i = 0; i < l; i=i+3) {
-			var p = cubicPoints[i];
-			if (p.x > x) {
-				if (i==0) {
-					cubicPoints.splice(0,0,new Point2D(x,y),new Point2D(x+pixelsUnit,y),new Point2D(2*cubicPoints[0].x-cubicPoints[1].x,2*cubicPoints[0].y-cubicPoints[1].y));
-				}
-				else {
-					cubicPoints.splice(i-1,0,new Point2D(x-pixelsUnit,y), new Point2D(x,y), new Point2D(x+pixelsUnit,y));
-				}
-				drawPrint();
-				return;
-			}
-		}
-		cubicPoints.push(new Point2D(2*cubicPoints[l-1].x-cubicPoints[l-2].x,2*cubicPoints[l-1].y-cubicPoints[l-2].y), new Point2D(x-pixelsUnit,y), new Point2D(x,y));
-		drawPrint();
-	}
-	else {
-		cubicPoints.push(new Point2D(2*cubicPoints[l-1].x-cubicPoints[l-2].x,2*cubicPoints[l-1].y-cubicPoints[l-2].y), new Point2D(x-pixelsUnit,y), new Point2D(x,y));
-		drawPrint();
-	}
+	// Create a point 
+	addPoint(cubicPoints,x,y);
+	addPoint(cubicPointsPrecise,x,y);
+	drawPrint();
 }
 
 function setSnap() {
@@ -566,18 +651,38 @@ function doCubicMouseMove(evt) {
 		var offsetX = x - cubicPoints[dragPointIndex].x;
 		var offsetY = y - cubicPoints[dragPointIndex].y;
 	}
+	if (offsetX == 0 && offsetY == 0) {
+		return;
+	}
 	// If shiftKey is pressed, move an anchor freely but still aligned with the other anchor and the main point.
 	// Else respect the lock
 	if ( ((draggingCubicSpecial) || (evt.shiftKey )) && ((1 < dragPointIndex && dragPointIndex < cubicPoints.length - 2) && (dragPointIndex % 3 != 0)) ) {
 		// Consider only the non extremal anchor points
-		draggingCubicSpecial = true; // Stop the normal behavior if the shift key is pressed once
-		if ( dragPointIndex % 3 == 1 ) {
-			var p0 = cubicPoints[dragPointIndex - 1];
-			var p1 = cubicPoints[dragPointIndex - 2];
+		if (!draggingCubicSpecial) {
+				if (movementHappened) {
+					updateCubicPointsPrecise();
+				}
+			draggingCubicSpecial = true; // Stop the normal behavior if the shift key is pressed once
+		}
+		if (lockSelect.checked) {
+			if ( dragPointIndex % 3 == 1 ) {
+				var p0 = cubicPointsPrecise[dragPointIndex - 1];
+				var p1 = cubicPointsPrecise[dragPointIndex - 2];
+			}
+			else {
+				var p0 = cubicPointsPrecise[dragPointIndex + 1];
+				var p1 = cubicPointsPrecise[dragPointIndex + 2];
+			}
 		}
 		else {
-			var p0 = cubicPoints[dragPointIndex + 1];
-			var p1 = cubicPoints[dragPointIndex + 2];
+			if ( dragPointIndex % 3 == 1 ) {
+				var p0 = cubicPoints[dragPointIndex - 1];
+				var p1 = cubicPoints[dragPointIndex - 2];
+			}
+			else {
+				var p0 = cubicPoints[dragPointIndex + 1];
+				var p1 = cubicPoints[dragPointIndex + 2];
+			}
 		}
 		var U = ( ((x - p0.x) * (p1.x - p0.x)) + ((y - p0.y) * (p1.y - p0.y)) ) / ( Math.pow(p1.x - p0.x, 2) + Math.pow(p1.y - p0.y, 2) );
 		//if (precisionSelect.checked) {
@@ -626,20 +731,53 @@ function doCubicMouseMove(evt) {
 			}
 		}
 		else if (lockSelect.checked) {
-			for (var i=3;i<= cubicPoints.length - 3;i=i+3) {
-				if (dragPointIndex == i-1) {
-					cubicPoints[i+1].x = 2*cubicPoints[i].x - cubicPoints[i-1].x;
-					cubicPoints[i+1].y = 2*cubicPoints[i].y - cubicPoints[i-1].y;
-				}
-				else if (dragPointIndex == i+1) {
-				   cubicPoints[i-1].x = 2*cubicPoints[i].x - cubicPoints[i+1].x;
-				   cubicPoints[i-1].y = 2*cubicPoints[i].y - cubicPoints[i+1].y;
-				}
+			if (dragPointIndex % 3 == 1 & dragPointIndex > 1) {
+				cubicPoints[dragPointIndex-2].x = 2*cubicPoints[dragPointIndex - 1].x - cubicPoints[dragPointIndex].x;
+				cubicPoints[dragPointIndex-2].y = 2*cubicPoints[dragPointIndex - 1].y - cubicPoints[dragPointIndex].y;
+			}
+			else if (dragPointIndex % 3 == 2 & dragPointIndex < cubicPoints.length - 2) {
+				cubicPoints[dragPointIndex + 2].x = 2*cubicPoints[dragPointIndex + 1].x - cubicPoints[dragPointIndex].x;
+				cubicPoints[dragPointIndex + 2].y = 2*cubicPoints[dragPointIndex + 1].y - cubicPoints[dragPointIndex].y;
 			}
 		}
 	}
+	movementHappened = true;
     cubicDraw();
 }
+
+function updateCubicPointsPrecise() {
+	if ( draggingCubicSpecial && dragPointIndex % 3 != 0 && dragPointIndex != 1 && dragPointIndex != cubicPoints.length-2 ) {
+		return;
+	}
+	var offsetX = cubicPoints[dragPointIndex].x - cubicPointsPrecise[dragPointIndex].x;
+	var offsetY = cubicPoints[dragPointIndex].y - cubicPointsPrecise[dragPointIndex].y;
+	cubicPointsPrecise[dragPointIndex].x = cubicPoints[dragPointIndex].x;
+	cubicPointsPrecise[dragPointIndex].y = cubicPoints[dragPointIndex].y;
+	if ( dragPointIndex % 3 == 0 ) {
+		if (dragPointIndex > 0) {
+			cubicPointsPrecise[dragPointIndex - 1].x += offsetX;
+			cubicPointsPrecise[dragPointIndex - 1].y += offsetY;
+		}
+		if (dragPointIndex < cubicPoints.length - 1) {
+			cubicPointsPrecise[dragPointIndex + 1].x += offsetX;
+			cubicPointsPrecise[dragPointIndex + 1].y += offsetY;
+		}
+	}
+	else {
+		if (lockSelect.checked) {
+			if (dragPointIndex % 3 == 1 && dragPointIndex > 1) {
+				cubicPointsPrecise[dragPointIndex - 2].x = cubicPoints[dragPointIndex - 2].x;
+				cubicPointsPrecise[dragPointIndex - 2].y = cubicPoints[dragPointIndex - 2].y;
+			}
+			else if (dragPointIndex % 3 == 2 & dragPointIndex < cubicPointsPrecise.length - 2) {
+				cubicPointsPrecise[dragPointIndex + 2].x = cubicPoints[dragPointIndex + 2].x;
+				cubicPointsPrecise[dragPointIndex + 2].y = cubicPoints[dragPointIndex + 2].y;
+			}
+		}
+	}
+	drawPrint();
+}
+
 
 function snapPoint(p) {
 	p.x = pixelSnap*Math.round(p.x/pixelSnap);
@@ -648,10 +786,16 @@ function snapPoint(p) {
 
 function snapPoints() {
 	if ( precisionSelect.checked ) {
-		for (var j=0;j<cubicPoints.length;j++) {
-			snapPoint(cubicPoints[j]);
+	var tempIndex = activeCubicIndex;
+		for (var i=0;i<cubicCurves.length;i++) {
+			changeActiveCurve(i);
+			for (var j=0;j<cubicPoints.length;j++) {
+				snapPoint(cubicPoints[j]);
+				snapPoint(cubicPointsPrecise[j]);
+			}
 		}
 	}
+	changeActiveCurve(tempIndex);
 	drawPrint();
 }
 
@@ -662,6 +806,11 @@ function newCubic() {
 		new Point2D(600-4*pixelsUnit,420-5*pixelsUnit+l*pixelsUnit), new Point2D(600-3*pixelsUnit,420-5*pixelsUnit+l*pixelsUnit), new Point2D(600-2*pixelsUnit,420-5*pixelsUnit+l*pixelsUnit),
 		new Point2D(600-pixelsUnit,420-pixelsUnit+l*pixelsUnit), new Point2D(600+pixelsUnit,420-pixelsUnit+l*pixelsUnit), new Point2D(600+3*pixelsUnit,420-pixelsUnit+l*pixelsUnit),
 		new Point2D(600+3*pixelsUnit,420-4*pixelsUnit+l*pixelsUnit), new Point2D(600+4*pixelsUnit,420-4*pixelsUnit+l*pixelsUnit)]);
+		
+		cubicCurvesPrecise.push([new Point2D(600-5*pixelsUnit,420-2*pixelsUnit+l*pixelsUnit),  new Point2D(600-4*pixelsUnit,420-3*pixelsUnit+l*pixelsUnit),
+		new Point2D(600-4*pixelsUnit,420-5*pixelsUnit+l*pixelsUnit), new Point2D(600-3*pixelsUnit,420-5*pixelsUnit+l*pixelsUnit), new Point2D(600-2*pixelsUnit,420-5*pixelsUnit+l*pixelsUnit),
+		new Point2D(600-pixelsUnit,420-pixelsUnit+l*pixelsUnit), new Point2D(600+pixelsUnit,420-pixelsUnit+l*pixelsUnit), new Point2D(600+3*pixelsUnit,420-pixelsUnit+l*pixelsUnit),
+		new Point2D(600+3*pixelsUnit,420-4*pixelsUnit+l*pixelsUnit), new Point2D(600+4*pixelsUnit,420-4*pixelsUnit+l*pixelsUnit)]);
 	}
 	drawPrint();
 }
@@ -669,6 +818,7 @@ function newCubic() {
 function changeActiveCurve(newIndex) {
 	activeCubicIndex = newIndex;
 	cubicPoints = cubicCurves[activeCubicIndex];
+	cubicPointsPrecise = cubicCurvesPrecise[activeCubicIndex];
 	cubicDraw();
 }
 
@@ -685,8 +835,18 @@ function resetCubicPoints() {
     new Point2D(600-2*pixelsUnit,420-4*pixelsUnit), new Point2D(600-1*pixelsUnit,420-4*pixelsUnit), new Point2D(600,420-4*pixelsUnit),
     new Point2D(600-pixelsUnit,420+pixelsUnit), new Point2D(600+pixelsUnit,420+pixelsUnit), new Point2D(600+3*pixelsUnit,420+pixelsUnit),
     new Point2D(600+3*pixelsUnit,420-3*pixelsUnit), new Point2D(600+4*pixelsUnit,420-2*pixelsUnit)]];
+	
+	cubicCurvesPrecise = [[new Point2D(600-5*pixelsUnit,420+pixelsUnit),  new Point2D(600-3*pixelsUnit,420+2*pixelsUnit),
+    new Point2D(600-2*pixelsUnit,420-4*pixelsUnit), new Point2D(600-1*pixelsUnit,420-4*pixelsUnit), new Point2D(600,420-4*pixelsUnit),
+    new Point2D(600-pixelsUnit,420+pixelsUnit), new Point2D(600+pixelsUnit,420+pixelsUnit), new Point2D(600+3*pixelsUnit,420+pixelsUnit),
+    new Point2D(600+3*pixelsUnit,420-3*pixelsUnit), new Point2D(600+4*pixelsUnit,420-2*pixelsUnit)]];
 	activeCubicIndex = 0;
 	cubicPoints = cubicCurves[0];
+	cubicPointsPrecise = cubicCurvesPrecise[0];
+	// Tests
+	// cubicCurves.push(cubicCurvesPrecise[0]);
+	// cubicCurvesPrecise.push(cubicCurvesPrecise[0]);
+	//
 	snapPoints();
 }
 
@@ -720,6 +880,10 @@ function init() {
 	tikzPreambleSelect.checked = true;
 	tikzPreambleSelect.onclick = function() { printTikzCode(); };
 	
+	tikzCenterSelect = document.getElementById("tikzCenter");
+	tikzCenterSelect.checked = true;
+	tikzCenterSelect.onclick = function() { printTikzCode(); };
+	
 	tikzLabelsSelect = document.getElementById("tikzLabels");
 	tikzLabelsSelect.checked = true;
 	tikzLabelsSelect.onclick = function() { printTikzCode(); };
@@ -728,8 +892,12 @@ function init() {
 	tikzSubGridSelect.checked = true;
 	tikzSubGridSelect.onclick = function() { printTikzCode(); };
 	
+	tikzPgfplotsSelect = document.getElementById("tikzPgfplots");
+	tikzPgfplotsSelect.checked = false;
+	tikzPgfplotsSelect.onclick = function() { printTikzCode(); };
+	
 	tikzStartEndPointsSelect = document.getElementById("tikzStartEndPoints");
-	tikzStartEndPointsSelect.checked = false;
+	tikzStartEndPointsSelect.checked = true;
 	tikzStartEndPointsSelect.onclick = function() { printTikzCode(); };	
 	
 	tikzCubicLabelSelect = document.getElementById("tikzCubicLabel");
@@ -739,6 +907,10 @@ function init() {
 	tikzTangentsSelect = document.getElementById("tikzTangents");
 	tikzTangentsSelect.checked = false;
 	tikzTangentsSelect.onclick = function() { printTikzCode(); };
+	
+	tikzTangentsPointsSelect = document.getElementById("tikzTangentsPoints");
+	tikzTangentsPointsSelect.checked = true;
+	tikzTangentsPointsSelect.onclick = function() { printTikzCode(); };
 	
 	tikzTangentsColorsSelect = document.getElementById("tikzTangentsColors");
 	tikzTangentsColorsSelect.checked = true;
@@ -757,6 +929,7 @@ function init() {
 function importCubic() {
 	var code = tikzInputBox.value;
 	var importListOfPoints = [];
+	var importListOfPointsPrecise = [];
 	var importCoords = [];
 	var importPoint = "";
 	var newX;
@@ -780,10 +953,14 @@ function importCubic() {
 		newX = importPoint[0].slice(1)*1;
 		newY = importPoint[1].slice(0,importPoint[1].length-1)*1;
 		importListOfPoints.push(new Point2D(Math.round(pixelsUnit * newX + cubicCanvasWidth/2),Math.round(-1 * pixelsUnit * newY + cubicCanvasHeight/2)))
+		importListOfPointsPrecise.push(new Point2D(Math.round(pixelsUnit * newX + cubicCanvasWidth/2),Math.round(-1 * pixelsUnit * newY + cubicCanvasHeight/2)))
 	}
 	cubicCurves[activeCubicIndex] = importListOfPoints;
+	cubicCurvesPrecise[activeCubicIndex] = importListOfPointsPrecise;
 	cubicPoints = cubicCurves[activeCubicIndex];
-	snapPoints();
+	cubicPointsPrecise = cubicCurvesPrecise[activeCubicIndex];
+	drawPrint();
+	// snapPoints();
 }
 
 // onClick="this.select();"
@@ -855,8 +1032,10 @@ Des exemples de courbes générées par cet outil sont disponibles <a href="/exe
 
 <p class="options">
 <input type="checkbox" id="tikzPreamble"> <label for="tikzPreamble" style="margin-right:1cm">Générer l'environnement tikzpicture entier</label>
+<input type="checkbox" id="tikzCenter"> <label for="tikzCenter" style="margin-right:1cm">Centrer le repère</label>
 <input type="checkbox" id="tikzLabels"> <label for="tikzLabels" style="margin-right:1cm">Graduations</label>
 <input type="checkbox" id="tikzSubGrid"> <label for="tikzSubGrid" style="margin-right:1cm">Sous-grille</label>
+<input type="checkbox" id="tikzPgfplots"> <label for="tikzPgfplots" style="margin-right:1cm">Mode pgfplots (avec styles à définir)</label>
 </p>
 
 <h3> Propriétés de la courbe </h3>
@@ -868,6 +1047,7 @@ Des exemples de courbes générées par cet outil sont disponibles <a href="/exe
 
 <p class="options">
 <input type="checkbox" id="tikzTangents"> <label for="tikzTangents" style="margin-right:1cm">Afficher les tangentes (non verticales uniquement)</label>
+<input type="checkbox" id="tikzTangentsPoints"> <label for="tikzTangentsPoints" style="margin-right:1cm">Ajouter un point par tangente</label>
 <input type="checkbox" id="tikzTangentsColors"> <label for="tikzTangentsColors" style="margin-right:1cm">Colorer les courbes ([svgnames]xcolor requis)</label>
 </p>
 
@@ -877,11 +1057,13 @@ Des exemples de courbes générées par cet outil sont disponibles <a href="/exe
 
 <p> Entrez le code Tikz d'une courbe de Bezier dans la zone ci-dessous (La ligne \draw ... uniquement). La courbe active sera alors remplacée par la votre. </p>
 
+<!--Attention, si la courbe a été finement retouchée (avec Maj), les tangentes seront moins précises.-->
+
 <input type="button" value="Importer la courbe" onClick="importCubic()">
 
 <textarea id="tikzInput" rows="5" style="width:100%; background-color:white; padding:5px; border-color:black; border:1px solid; font-size: 12px;"> </textarea>
 
-<p style="font-style=italic; margin-top:1cm;"> v1.5g - Basé sur <a href="https://math.hws.edu/eck/cs424/notes2013/canvas/bezier.html">Bezier Curve Demos</a> - Intégration Tikz et ajout de fonctionnalités par moi </p>
+<p style="font-style=italic; margin-top:1cm;"> v1.6a - Basé sur <a href="https://math.hws.edu/eck/cs424/notes2013/canvas/bezier.html">Bezier Curve Demos</a> - Intégration Tikz et ajout de fonctionnalités par V.Delauney </p>
 
 <!--
 v1.0 - Lancement
@@ -896,9 +1078,10 @@ v1.5 - Jusqu'à 5 courbes, meilleure gestion
 v1.5c - Position automatique des labels
 v1.5d - Supprimer une courbe
 v1.5f+g - Export amélioré
+v1.6 - Export pgfplots perso
+v1.6a - Meilleure précision des tangentes, mais pas encore à l'import...
 
 Idées:
-Option pgfplots
 Refaire le css
 Cookies
 couleurs+style spécifiés par l'utilisateur + cookie
