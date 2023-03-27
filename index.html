@@ -3,6 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <title>Bezier vers Tikz</title>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HTK6BKJQMS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-HTK6BKJQMS');
+</script>
 <script type="text/javascript">
 
 "use strict";
@@ -1008,7 +1017,7 @@ Des exemples de courbes générées par cet outil sont disponibles <a href="/exe
 <ul>
 <li> Pour insérer ou supprimer un point, il suffit de double-cliquer. </li>
 <li> Les coordonnées sont arrondies au dixième. De plus, appuyer sur <b>Ctrl</b> avant ou pendant le déplacement d'un point permet de le positionner sur la grille, facilitant le placement dans des cas simples.</li>
-<li> Le mode intelligent permet d'insérer un nouveau point dans une courbe existente. Il ne fonctionne correctement que si les points de contrôle principaux (noirs) sont classés par abscisses croissantes (utile pour représenter des fonctions f:R -> R). S'il est désactivé, les nouveaux points sont ajoutés après le dernier. </li>
+<li> Le mode intelligent permet d'insérer un nouveau point dans une courbe existante. Il ne fonctionne correctement que si les points de contrôle principaux (noirs) sont classés par abscisses croissantes (utile pour représenter des fonctions f:R -> R). S'il est désactivé, les nouveaux points sont ajoutés après le dernier. </li>
 <li> Appuyer sur <b>Shift (Maj)</b> avant ou pendant le déplacement d'un point de contrôle secondaire permet de le déplacer sur la tangente, permettant de garder une certaine régularité <!--(la courbe (R -> R²) n'est plus C1 mais la fonction associée (R -> R) le reste)--> tout en ayant un contrôle plus fin. </li>
 <li> <i>(Déconseillé) On peut déverouiller les points de contrôle pour les ajuster indépendamment, mais la courbe sera alors moins régulière.</i> </li>
 </ul>
@@ -1063,7 +1072,7 @@ Des exemples de courbes générées par cet outil sont disponibles <a href="/exe
 
 <textarea id="tikzInput" rows="5" style="width:100%; background-color:white; padding:5px; border-color:black; border:1px solid; font-size: 12px;"> </textarea>
 
-<p style="font-style=italic; margin-top:1cm;"> v1.6a - Basé sur <a href="https://math.hws.edu/eck/cs424/notes2013/canvas/bezier.html">Bezier Curve Demos</a> - Intégration Tikz et ajout de fonctionnalités par V.Delauney </p>
+<p style="font-style=italic; margin-top:1cm;"> v1.6b - Basé sur <a href="https://math.hws.edu/eck/cs424/notes2013/canvas/bezier.html">Bezier Curve Demos</a> - Intégration Tikz et ajout de fonctionnalités par V.Delauney </p>
 
 <!--
 v1.0 - Lancement
