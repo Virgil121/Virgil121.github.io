@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Bezier vers Tikz</title>
+
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-HTK6BKJQMS"></script>
 <script>
@@ -12,6 +13,17 @@
 
   gtag('config', 'G-HTK6BKJQMS');
 </script>
+
+<!-- CountAPI -->
+<script async src="https://api.countapi.xyz/hit/virgil121.github.io/3dcdfe2c-fc27-48e2-926a-0bf6e587aa3a?callback=websiteVisits">
+</script>
+<script type="text/javascript">
+function websiteVisits(response) {
+    document.querySelector("#visites").textContent = response.value;
+}
+</script>
+
+<!-- Bezier -->
 <script type="text/javascript">
 
 "use strict";
@@ -1072,7 +1084,7 @@ Des exemples de courbes générées par cet outil sont disponibles <a href="/exe
 
 <textarea id="tikzInput" rows="5" style="width:100%; background-color:white; padding:5px; border-color:black; border:1px solid; font-size: 12px;"> </textarea>
 
-<p style="font-style=italic; margin-top:1cm;"> v1.6b - Basé sur <a href="https://math.hws.edu/eck/cs424/notes2013/canvas/bezier.html">Bezier Curve Demos</a> - Intégration Tikz et ajout de fonctionnalités par V.Delauney </p>
+<p style="font-style=italic; margin-top:1cm;"> v1.6b - Basé sur <a href="https://math.hws.edu/eck/cs424/notes2013/canvas/bezier.html">Bezier Curve Demos</a> - Intégration Tikz et ajout de fonctionnalités par V.Delauney. Nombre de visites: <span id="visites"></span> </p>
 
 <!--
 v1.0 - Lancement
@@ -1091,6 +1103,8 @@ v1.6 - Export pgfplots perso
 v1.6a - Meilleure précision des tangentes, mais pas encore à l'import...
 
 Idées:
+Désactiver grille principale et Option pointillés vers points de contrôle
+Option tangente ou Flèches avec pts de contrôle
 Refaire le css
 Cookies
 couleurs+style spécifiés par l'utilisateur + cookie
