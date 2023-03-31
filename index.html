@@ -230,11 +230,11 @@ function disk( graphics, x, y, radius ) {
 ///////////////////////////////////////////////
 
 function convertX(x) {
-	return (Math.round(1000*(x-cubicCanvasWidth/2)/pixelsUnit)/1000);
+	return (Math.round(10000*(x-cubicCanvasWidth/2)/pixelsUnit)/10000);
 }
 
 function convertY(y) {
-	return (Math.round(1000*(cubicCanvasHeight/2-y)/pixelsUnit)/1000);
+	return (Math.round(10000*(cubicCanvasHeight/2-y)/pixelsUnit)/10000);
 }
 
 function bezierComputePoint(p0,p1,p2,p3,t) {
@@ -417,12 +417,12 @@ function generateDrawCommands(i) {
 			// }
 			// else {
 			// Tangents need to be precise
-			a1 = Math.round(a1 * 1000) / 1000;
-			a2 = Math.round(a2 * 1000) / 1000;			
+			a1 = Math.round(a1 * 10000) / 10000;
+			a2 = Math.round(a2 * 10000) / 10000;			
 			// }
 			if ( a2 != 0 ) {
 				var b = convertY(p1.y) - a1 / a2 * convertX(p1.x);
-				b = Math.round(b * 1000)/1000;
+				b = Math.round(b * 10000)/10000;
 				var stylepoint="stylepoint";
 				if ( ! tikzPgfplotsSelect.checked ) {
 					stylepoint="draw=black,circle,fill,inner sep=1.2pt,semithick";
