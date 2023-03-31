@@ -50,9 +50,10 @@ var tikzLabelsSelect;
 var tikzSubGridSelect;
 var tikzPgfplotsSelect;
 var tikzStartEndPointsSelect;
+var tikzShowPointsSelect;
+var tikzPointsLabelsSelect;
 var tikzCubicLabelSelect;
 var tikzTangentsSelect;
-var tikzTangentsPointsSelect;
 var tikzTangentsColorsSelect;
 var textBox;
 var tikzInputBox;
@@ -73,14 +74,20 @@ var tangentPointsColors = ["blue","red","green","OrangeRed","MediumVioletRed"];
 
 var cubicColors = ["black","DarkBlue","DarkRed","DarkGreen","OrangeRed","MediumVioletRed"];
 var functionNames = ["f","g","h","i","j"]
+var alphabet = ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"];
+var currentLetterIndex = 0;
 
 var space = ""
 //var cubicColors = ["black","blue","#880000","#888888"]; // curve, aux control points, tangent, unlocked tangents
 //var cubicColorsInactive = ["grey","#7d7de8","#e87d7d","#b3b3b3"];
 
-//
-// CANVAS
-//
+
+
+
+
+///////////////////////////////////////////////
+//                  CANVAS                   //
+///////////////////////////////////////////////
 
 function Point2D(x,y) {
     this.x = x;
@@ -212,9 +219,15 @@ function disk( graphics, x, y, radius ) {
     graphics.fill();
 }
 
-//
-// TIKZ
-//
+
+
+
+
+
+
+///////////////////////////////////////////////
+//              TIKZ CONVERSION              //
+///////////////////////////////////////////////
 
 function convertX(x) {
 	return (Math.round(1000*(x-cubicCanvasWidth/2)/pixelsUnit)/1000);
@@ -298,6 +311,63 @@ var directionsTikz = ["right","above right","above","above left","left","below l
 
 var numGlobalTangent;
 
+function optimalDirectionFunctionLabel(listOfPoints) {
+	// Try to find the optimal position of the function label
+	var l = listOfPoints.length;
+	var tanX = ( listOfPoints[l-1].x + listOfPoints[l-2].x - listOfPoints[l-3].x - listOfPoints[l-4].x ); // * 3/4
+	var tanY = ( listOfPoints[l-1].y + listOfPoints[l-2].y - listOfPoints[l-3].y - listOfPoints[l-4].y );
+
+	var listOfScalarProducts = [];
+	var normalVector = [-tanY,tanX];
+	var secondX = ( listOfPoints[l-1].x - listOfPoints[l-2].x - listOfPoints[l-3].x + listOfPoints[l-4].x ); // * 3 - Compare this normal and the second derivative
+	var secondY = ( listOfPoints[l-1].y - listOfPoints[l-2].y - listOfPoints[l-3].y + listOfPoints[l-4].y );
+	
+	// Adjust the normal vector to make the point go "outwards" the curve
+	if (-tanY * (secondX) + tanX * (secondY) < 0) { // Normally i should test for (scalar product)>0 ...
+		normalVector = [tanY,-tanX];
+	}
+	
+	// Select the direction that gives the highest scalar product
+	for (let el of directions) { 
+		listOfScalarProducts.push(normalVector[0]*el[0]+normalVector[1]*el[1]);
+	}
+	var optimalDirection = directionsTikz[0];
+	var maxScalarProd = listOfScalarProducts[0];
+	for (var j = 1;j<8;j++) {
+		if (listOfScalarProducts[j] < maxScalarProd) {
+			maxScalarProd = listOfScalarProducts[j];
+			optimalDirection = directionsTikz[j];
+		}
+	}
+	return(optimalDirection)
+}
+
+function optimalDirectionControlPoint(listOfPoints,i) {
+	// Try to find the optimal position of the point label (same as above but it computes the derivatives for t=1 instead of t=1/2)
+	var tanX = ( listOfPoints[i].x - listOfPoints[i-1].x ); // * 3
+	var tanY = ( listOfPoints[i].y - listOfPoints[i-1].y );
+
+	var listOfScalarProducts = [];
+	var normalVector = [-tanY,tanX];
+	var secondX = ( listOfPoints[i].x -2*listOfPoints[i-1].x +listOfPoints[i-2].x ); // * 6 - Compare this normal and the second derivative
+	var secondY = ( listOfPoints[i].y -2*listOfPoints[i-1].y +listOfPoints[i-2].y );
+	if (-tanY * (secondX) + tanX * (secondY) < 0) { 
+		normalVector = [tanY,-tanX];
+	}
+	for (let el of directions) {
+		listOfScalarProducts.push(normalVector[0]*el[0]+normalVector[1]*el[1]);
+	}
+	var optimalDirection = directionsTikz[0];
+	var maxScalarProd = listOfScalarProducts[0];
+	for (var j = 1;j<8;j++) {
+		if (listOfScalarProducts[j] < maxScalarProd) {
+			maxScalarProd = listOfScalarProducts[j];
+			optimalDirection = directionsTikz[j];
+		}
+	}
+	return(optimalDirection)
+}
+
 function generateDrawCommands(i) {
 	var listOfPoints = cubicCurves[i];
 	var listOfPointsPrecise = cubicCurvesPrecise[i];
@@ -323,29 +393,7 @@ function generateDrawCommands(i) {
 		}
 	}
 	if ( tikzCubicLabelSelect.checked ) {
-		// Try to find the optimal position of the label
-		var tanX = ( listOfPoints[l-1].x + listOfPoints[l-2].x - listOfPoints[l-3].x - listOfPoints[l-4].x ); // * 3/4
-		var tanY = ( listOfPoints[l-1].y + listOfPoints[l-2].y - listOfPoints[l-3].y - listOfPoints[l-4].y );
-
-		var listOfScalarProducts = [];
-		var normalVector = [-tanY,tanX];
-		var secondX = ( listOfPoints[l-1].x - listOfPoints[l-2].x - listOfPoints[l-3].x + listOfPoints[l-4].x ); // * 3 - Compare this normal and the second derivative
-		var secondY = ( listOfPoints[l-1].y - listOfPoints[l-2].y - listOfPoints[l-3].y + listOfPoints[l-4].y );
-		if (-tanY * (secondX) + tanX * (secondY) < 0) { 
-			normalVector = [tanY,-tanX];
-		}
-		for (let el of directions) {
-			listOfScalarProducts.push(normalVector[0]*el[0]+normalVector[1]*el[1]);
-		}
-		var optimalDirection = directionsTikz[0];
-		var maxScalarProd = listOfScalarProducts[0];
-		for (var j = 1;j<8;j++) {
-			if (listOfScalarProducts[j] < maxScalarProd) {
-				maxScalarProd = listOfScalarProducts[j];
-				optimalDirection = directionsTikz[j];
-			}
-		}
-		res = res + " node[font=&#92footnotesize,pos=0.5,"+optimalDirection+"] {$&#92mathscr C_"+functionName+"$}";
+		res = res + " node[font=&#92footnotesize,pos=0.5,"+optimalDirectionFunctionLabel(listOfPoints)+"] {$&#92mathscr C_"+functionName+"$}";
 	}
 	if ( tikzStartEndPointsSelect.checked ) {
 		res = res + " node[pos=1,circle,fill,inner sep=0.8pt] {}";
@@ -356,7 +404,7 @@ function generateDrawCommands(i) {
 		res = res + "\n"+space+"% Tangentes";
 		for(var j=3;j<l-2;j=j+3) {
 			var p0 = listOfPointsPrecise[j];
-			var p1 = listOfPointsPrecise[j+1]
+			var p1 = listOfPointsPrecise[j+1];
 			var a1 = (convertY(p1.y) - convertY(p0.y));
 			var a2 = (convertX(p1.x) - convertX(p0.x));
 			if ( a2 < 0 ) {
@@ -379,13 +427,18 @@ function generateDrawCommands(i) {
 				if ( ! tikzPgfplotsSelect.checked ) {
 					stylepoint="draw=black,circle,fill,inner sep=1.2pt,semithick";
 				}
-				if (tikzTangentsPointsSelect.checked) {
+				if (tikzShowPointsSelect.checked) {
 					if (tikzTangentsColorsSelect.checked) {
-						res = res + "\n"+space+"&#92draw "+pointToStr(p0)+" node["+stylepoint+",fill="+tangentPointsColors[numGlobalTangent % tangentColors.length]+"] {};";
+						res = res + "\n"+space+"&#92draw "+pointToStr(p0)+" node["+stylepoint+",fill="+tangentPointsColors[numGlobalTangent % tangentColors.length]+"] {}";
 					}
 					else {
-						res = res + "\n"+space+"&#92draw "+pointToStr(p0)+" node["+stylepoint+",fill=black] {};";
+						res = res + "\n"+space+"&#92draw "+pointToStr(p0)+" node["+stylepoint+",fill=black] {}";
 					}
+					if (tikzPointsLabelsSelect.checked) {
+						res = res + " node["+optimalDirectionControlPoint(listOfPoints,j)+"] {"+alphabet[currentLetterIndex]+"}";
+						currentLetterIndex = currentLetterIndex + 1;
+					}
+					res = res + ";";
 				}
 				if ( tikzPgfplotsSelect.checked ) {
 					res = res + "\n"+space+"&#92addplot[styleplot";
@@ -412,14 +465,41 @@ function generateDrawCommands(i) {
 					res = res + b.toString();
 				}
 				if ( tikzPgfplotsSelect.checked ) {
-					res = res +"};\n";
+					res = res +"};";
 				}
 				else {
-					res = res +"});\n";
+					res = res +"});";
+				}
+				if (tikzShowPointsSelect.checked) {
+					res = res + "\n";
 				}
 			}
 		}
 	}
+	else {
+		if (tikzShowPointsSelect.checked) {
+			var stylepoint="stylepoint";
+			if ( ! tikzPgfplotsSelect.checked ) {
+				stylepoint="draw=black,circle,fill,inner sep=1.2pt,semithick";
+			}
+			for(var j=3;j<l-2;j=j+3) {
+				var p0 = listOfPointsPrecise[j];
+				var p1 = listOfPointsPrecise[j+1];
+				if (tikzTangentsColorsSelect.checked) {
+					res = res + "\n"+space+"&#92draw "+pointToStr(p0)+" node["+stylepoint+",fill="+curveColor+"] {}";
+				}
+				else {
+					res = res + "\n"+space+"&#92draw "+pointToStr(p0)+" node["+stylepoint+",fill=black] {}";
+				}
+				if (tikzPointsLabelsSelect.checked) {
+					res = res + " node["+optimalDirectionControlPoint(listOfPoints,j)+"] {"+alphabet[currentLetterIndex]+"}";
+					currentLetterIndex = currentLetterIndex + 1;
+				}
+				res = res + ";";
+			}
+		}
+	}
+	res=res+"\n";
 	return(res);
 }
 
@@ -473,6 +553,7 @@ function printTikzCode() {
 		}
 	}
 	numGlobalTangent = 0;
+	currentLetterIndex = 0;
 	for ( var i = 0 ; i < cubicCurves.length ; i++ ) {
 		res = res + "% Courbe de "+functionNames[i]+"\n"+space+generateDrawCommands(i);
 		if (i < cubicCurves.length - 1) {
@@ -495,9 +576,15 @@ function printTikzCode() {
 	textBox.innerHTML=res;
 }
 
-//
-// EVENTS
-//
+
+
+
+
+
+
+///////////////////////////////////////////////
+//                  EVENTS                   //
+///////////////////////////////////////////////
 
 function doLock() {
     if ( lockSelect.checked ) {
@@ -715,8 +802,8 @@ function doCubicMouseMove(evt) {
 		//else {
 		//
 		// Allow for more digits when using this mode to preserve the alignment
-		cubicPoints[dragPointIndex].x = p0.x + Math.round((U * (p1.x - p0.x)));
-		cubicPoints[dragPointIndex].y = p0.y + Math.round((U * (p1.y - p0.y)));
+		cubicPoints[dragPointIndex].x = p0.x + (U * (p1.x - p0.x));
+		cubicPoints[dragPointIndex].y = p0.y + (U * (p1.y - p0.y));
 		//}
 	}
 	else {
@@ -873,6 +960,15 @@ function resetCubicPoints() {
 	snapPoints();
 }
 
+function togglePointsLabelsCheckbox() {
+	if (tikzPointsLabelsSelect.disabled == true) {
+		tikzPointsLabelsSelect.disabled = false;
+	}
+	else {
+		tikzPointsLabelsSelect.disabled = true;
+	}
+}
+
 function init() {
     try {
         cubicCanvas = document.getElementById("cubic");
@@ -923,6 +1019,14 @@ function init() {
 	tikzStartEndPointsSelect.checked = true;
 	tikzStartEndPointsSelect.onclick = function() { printTikzCode(); };	
 	
+	tikzShowPointsSelect = document.getElementById("tikzShowPoints");
+	tikzShowPointsSelect.checked = false;
+	tikzShowPointsSelect.onclick = function() { togglePointsLabelsCheckbox(); printTikzCode(); };	
+	
+	tikzPointsLabelsSelect = document.getElementById("tikzPointsLabels");
+	tikzPointsLabelsSelect.checked = false;
+	tikzPointsLabelsSelect.onclick = function() { printTikzCode(); };	
+	
 	tikzCubicLabelSelect = document.getElementById("tikzCubicLabel");
 	tikzCubicLabelSelect.checked = true;
 	tikzCubicLabelSelect.onclick = function() { printTikzCode(); };	
@@ -931,16 +1035,12 @@ function init() {
 	tikzTangentsSelect.checked = false;
 	tikzTangentsSelect.onclick = function() { printTikzCode(); };
 	
-	tikzTangentsPointsSelect = document.getElementById("tikzTangentsPoints");
-	tikzTangentsPointsSelect.checked = true;
-	tikzTangentsPointsSelect.onclick = function() { printTikzCode(); };
-	
 	tikzTangentsColorsSelect = document.getElementById("tikzTangentsColors");
 	tikzTangentsColorsSelect.checked = true;
 	tikzTangentsColorsSelect.onclick = function() { printTikzCode(); };
 	
 	textBox = document.getElementById("coordinates");
-	tikzInputBox = document.getElementById("tikzInput")
+	tikzInputBox = document.getElementById("tikzInput");
     
 	resetCubicPoints();
     document.addEventListener("mouseup", doMouseUp, false);
@@ -1051,7 +1151,7 @@ Des exemples de courbes générées par cet outil sont disponibles <a href="/exe
 
 <h2> Export Tikz </h2>
 
-<h3> Environnement Tikz </h3>
+<h3> Environnement Tikz et repère</h3>
 
 <p class="options">
 <input type="checkbox" id="tikzPreamble"> <label for="tikzPreamble" style="margin-right:1cm">Générer l'environnement tikzpicture entier</label>
@@ -1061,7 +1161,7 @@ Des exemples de courbes générées par cet outil sont disponibles <a href="/exe
 <input type="checkbox" id="tikzPgfplots"> <label for="tikzPgfplots" style="margin-right:1cm">Mode pgfplots (avec styles à définir)</label>
 </p>
 
-<h3> Propriétés de la courbe </h3>
+<h3> Propriétés des courbes </h3>
 
 <p class="options">
 <input type="checkbox" id="tikzStartEndPoints"> <label for="tikzStartEndPoints" style="margin-right:1cm">Insérer des points aux extrémités des courbes</label>
@@ -1069,8 +1169,12 @@ Des exemples de courbes générées par cet outil sont disponibles <a href="/exe
 </p>
 
 <p class="options">
+<input type="checkbox" id="tikzShowPoints"> <label for="tikzShowPoints" style="margin-right:1cm">Insérer les points de contrôle principaux (noirs)</label>
+<input type="checkbox" id="tikzPointsLabels" disabled=true> <label for="tikzPointsLabels" style="margin-right:1cm">Nommer les points de contrôle principaux</label>
+</p>
+
+<p class="options">
 <input type="checkbox" id="tikzTangents"> <label for="tikzTangents" style="margin-right:1cm">Afficher les tangentes (non verticales uniquement)</label>
-<input type="checkbox" id="tikzTangentsPoints"> <label for="tikzTangentsPoints" style="margin-right:1cm">Ajouter un point par tangente</label>
 <input type="checkbox" id="tikzTangentsColors"> <label for="tikzTangentsColors" style="margin-right:1cm">Colorer les courbes ([svgnames]xcolor requis)</label>
 </p>
 
@@ -1078,7 +1182,7 @@ Des exemples de courbes générées par cet outil sont disponibles <a href="/exe
 
 <h2> Import Tikz </h2>
 
-<p> Entrez le code Tikz d'une courbe de Bezier dans la zone ci-dessous (La ligne \draw ... uniquement). La courbe active sera alors remplacée par la votre. </p>
+<p> Entrez le code Tikz d'une courbe de Bezier dans la zone ci-dessous (Le bloc \draw ... uniquement et sans parenthèses autres que les coordonnées). La courbe active sera alors remplacée par la votre.</p>
 
 <!--Attention, si la courbe a été finement retouchée (avec Maj), les tangentes seront moins précises.-->
 
@@ -1086,7 +1190,7 @@ Des exemples de courbes générées par cet outil sont disponibles <a href="/exe
 
 <textarea id="tikzInput" rows="5" style="width:100%; background-color:white; padding:5px; border-color:black; border:1px solid; font-size: 12px;"> </textarea>
 
-<p style="font-style=italic; margin-top:1cm;"> v1.6b - Basé sur <a href="https://math.hws.edu/eck/cs424/notes2013/canvas/bezier.html">Bezier Curve Demos</a> - Intégration Tikz et ajout de fonctionnalités par V.Delauney. Nombre de visites: <span id="visites"></span> </p>
+<p style="font-style=italic; margin-top:1cm;"> v1.6c - Basé sur <a href="https://math.hws.edu/eck/cs424/notes2013/canvas/bezier.html">Bezier Curve Demos</a> - Intégration Tikz et ajout de fonctionnalités par V.Delauney. Nombre de visites: <span id="visites"></span> </p>
 
 <!--
 v1.0 - Lancement
@@ -1104,8 +1208,10 @@ v1.5f+g - Export amélioré
 v1.6 - Export pgfplots perso
 v1.6a - Meilleure précision des tangentes, mais pas encore à l'import...
 v1.6b - Compteur de visites
+v1.6c - Points de contrôles nommés, avec placement automatique du label, précision des tangentes à l'import amélioré
 
 Idées:
+Fonction autrePointControle(i) if ...
 Désactiver grille principale et Option pointillés vers points de contrôle
 Option tangente ou Flèches avec pts de contrôle
 Refaire le css
