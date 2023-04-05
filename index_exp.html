@@ -4,27 +4,8 @@
 <meta charset="UTF-8">
 <title>Bezier vers Tikz</title>
 
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-HTK6BKJQMS"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-HTK6BKJQMS');
-</script>
-
-<!-- CountAPI -->
-<script type="text/javascript">
-function websiteVisits(response) {
-	setTimeout(() => {
-		document.querySelector("#visites").textContent = response.value;
-	}, 50);
-}
-</script>
-<script src="https://api.countapi.xyz/hit/virgil121.github.io/3dcdfe2c-fc27-48e2-926a-0bf6e587aa3a?callback=websiteVisits">
-</script>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.min.js"></script>
+<script src="runlatex.js"></script>
 <!-- Bezier -->
 <script type="text/javascript">
 
@@ -56,6 +37,7 @@ var tikzCubicLabelSelect;
 var tikzTangentsSelect;
 var tikzTangentsColorsSelect;
 var textBox;
+var compilerBox;
 var tikzInputBox;
 
 var cubicCanvasWidth=1200;
@@ -70,9 +52,10 @@ var pixelSnap=precisionSnap * pixelsUnit;
 var xmin,xmax,ymin,ymax;
 
 var tangentColors = ["DarkBlue","DarkRed","DarkGreen","OrangeRed","MediumVioletRed"]; // densely dashed, densely dotted, dash pattern={on 2pt off 2pt on 6pt off 2pt}
-var tangentPointsColors = ["blue","red","green","OrangeRed","MediumVioletRed"];
+var tangentPointsColors = ["blue","red","green","Coral","magenta"];
 
 var cubicColors = ["black","DarkBlue","DarkRed","DarkGreen","OrangeRed","MediumVioletRed"];
+var cubicPointsColors = ["lightgray","blue","red","green","Coral","magenta"];
 var functionNames = ["f","g","h","i","j"]
 var alphabet = ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"];
 var currentLetterIndex = 0;
@@ -486,7 +469,7 @@ function generateDrawCommands(i) {
 				var p0 = listOfPointsPrecise[j];
 				var p1 = listOfPointsPrecise[j+1];
 				if (tikzTangentsColorsSelect.checked) {
-					res = res + "\n"+space+"\\draw "+pointToStr(p0)+" node["+stylepoint+",fill="+curveColor+"] {}";
+					res = res + "\n"+space+"\\draw "+pointToStr(p0)+" node["+stylepoint+",fill="+cubicPointsColors[i]+"] {}";
 				}
 				else {
 					res = res + "\n"+space+"\\draw "+pointToStr(p0)+" node["+stylepoint+",fill=black] {}";
@@ -573,14 +556,8 @@ function printTikzCode() {
 				res = res + "\n\\end{center}";
 			}
 	}
-	textBox.innerHTML=res;
+	textBox.setValue(res);
 }
-
-
-
-
-
-
 
 ///////////////////////////////////////////////
 //                  EVENTS                   //
@@ -1039,7 +1016,7 @@ function init() {
 	tikzTangentsColorsSelect.checked = true;
 	tikzTangentsColorsSelect.onclick = function() { printTikzCode(); };
 	
-	textBox = document.getElementById("coordinates");
+	textBox = editors["pre0"].session;
 	tikzInputBox = document.getElementById("tikzInput");
     
 	resetCubicPoints();
@@ -1178,19 +1155,25 @@ Des exemples de courbes générées par cet outil sont disponibles <a href="/exe
 <input type="checkbox" id="tikzTangentsColors"> <label for="tikzTangentsColors" style="margin-right:1cm">Colorer les courbes ([svgnames]xcolor requis)</label>
 </p>
 
-<textarea readonly id="coordinates" rows="33" style="width:100%; background-color:white; padding:5px; border-color:black; border:1px solid; font-size: 12px;"> </textarea>
+<div class="h">
+<pre id="compiler">
+  \documentclass{article}
+  \begin{document}
+  \end{document}
+</pre>
+</div>
 
 <h2> Import Tikz </h2>
 
 <p> Entrez le code Tikz d'une courbe de Bezier dans la zone ci-dessous (Le bloc \draw ... uniquement et sans parenthèses autres que les coordonnées). La courbe active sera alors remplacée par la votre.</p>
 
-<!--Attention, si la courbe a été finement retouchée (avec Maj), les tangentes seront moins précises. -- Précision améliorée (1.6c)-->
+<!--Attention, si la courbe a été finement retouchée (avec Maj), les tangentes seront moins précises.-->
 
 <input type="button" value="Importer la courbe" onClick="importCubic()">
 
 <textarea id="tikzInput" rows="5" style="width:100%; background-color:white; padding:5px; border-color:black; border:1px solid; font-size: 12px;"> </textarea>
 
-<p style="font-style=italic; margin-top:1cm;"> v1.6c - Basé sur <a href="https://math.hws.edu/eck/cs424/notes2013/canvas/bezier.html">Bezier Curve Demos</a> - Intégration Tikz et ajout de fonctionnalités par V.Delauney. Nombre de visites: <span id="visites"></span> </p>
+<p style="font-style=italic; margin-top:1cm;"> v1.7 - Basé sur <a href="https://math.hws.edu/eck/cs424/notes2013/canvas/bezier.html">Bezier Curve Demos</a> - Intégration Tikz et ajout de fonctionnalités par V.Delauney. Nombre de visites: <span id="visites"></span> </p>
 
 <!--
 v1.0 - Lancement
@@ -1209,9 +1192,9 @@ v1.6 - Export pgfplots perso
 v1.6a - Meilleure précision des tangentes, mais pas encore à l'import...
 v1.6b - Compteur de visites
 v1.6c - Points de contrôles nommés, avec placement automatique du label, précision des tangentes à l'import amélioré
+v1.7 - Compilation en ligne
 
 Idées:
-printPgfplots et printTkzbase (séparation)
 Fonction autrePointControle(i) if ...
 Désactiver grille principale et Option pointillés vers points de contrôle
 Option tangente ou Flèches avec pts de contrôle
