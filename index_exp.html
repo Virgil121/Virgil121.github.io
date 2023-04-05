@@ -5,7 +5,7 @@
 <title>Bezier vers Tikz</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.min.js"></script>
-<script src="runlatex.js"></script>
+<script src="runlatex_mod.js"></script>
 <!-- Bezier -->
 <script type="text/javascript">
 
@@ -427,7 +427,12 @@ function generateDrawCommands(i) {
 					res = res + "\n"+space+"\\addplot[styleplot";
 				}
 				else {
-					res = res + "\n"+space+"\\draw[domain=\\bezierXmin:\\bezierXmax,line width=1pt";
+					if ( tikzPreambleSelect.checked ) {
+						res = res + "\n"+space+"\\draw[domain=\\bezierXmin:\\bezierXmax,line width=1pt";
+					}
+					else {
+					res = res + "\n"+space+"\\draw[domain="+xmin.toString()+":"+xmax.toString()+",line width=1pt";
+					}
 				}
 				if ( tikzTangentsColorsSelect.checked ) {
 					var col = tangentColors[numGlobalTangent % tangentColors.length];
@@ -500,6 +505,7 @@ function printTikzCode() {
 			space = "";
 		}
 	// Tikz preamble
+	setLimits();
 	if ( tikzPreambleSelect.checked ) {
 		if ( tikzPgfplotsSelect.checked ) {
 			if ( tikzCenterSelect.checked ) {
@@ -518,7 +524,6 @@ function printTikzCode() {
 				res = "\\begin{center}\n";
 			}
 			res = res + "\\begin{tikzpicture}";
-			setLimits();
 			var xRange = xmax - xmin;
 			if ( xRange > 14 ) {
 				var scale = Math.round(1400 / xRange)/100;
@@ -534,6 +539,9 @@ function printTikzCode() {
 			}
 			res = res + "\\tkzDrawX[right space=0pt,above left=4pt,font=\\scriptsize] %Axe X\n\t\\tkzDrawY[up space=0pt,below right=4pt,font=\\scriptsize] %Axe Y\n\t\\clip (\\bezierXmin,\\bezierYmin) rectangle (\\bezierXmax,\\bezierYmax);\n\t%\n\t% Courbes\n\t%\n\t";
 		}
+	}
+	else {
+		res = res + "\\clip ("+xmin.toString()+","+ymin.toString()+") rectangle ("+xmax.toString()+","+ymax.toString()+");\n";
 	}
 	numGlobalTangent = 0;
 	currentLetterIndex = 0;
@@ -946,6 +954,19 @@ function togglePointsLabelsCheckbox() {
 	}
 }
 
+function toggleEnvironmentCheckbox() {
+	if (tikzCenterSelect.disabled == true) {
+		tikzCenterSelect.disabled = false;
+		tikzLabelsSelect.disabled = false;
+		tikzSubGridSelect.disabled = false;
+	}
+	else {
+		tikzCenterSelect.disabled = true;
+		tikzLabelsSelect.disabled = true;
+		tikzSubGridSelect.disabled = true;
+	}
+}
+
 function init() {
     try {
         cubicCanvas = document.getElementById("cubic");
@@ -974,7 +995,7 @@ function init() {
 	
 	tikzPreambleSelect = document.getElementById("tikzPreamble");
 	tikzPreambleSelect.checked = true;
-	tikzPreambleSelect.onclick = function() { printTikzCode(); };
+	tikzPreambleSelect.onclick = function() { toggleEnvironmentCheckbox(); printTikzCode(); };
 	
 	tikzCenterSelect = document.getElementById("tikzCenter");
 	tikzCenterSelect.checked = true;
@@ -1135,7 +1156,7 @@ Des exemples de courbes générées par cet outil sont disponibles <a href="/exe
 <input type="checkbox" id="tikzCenter"> <label for="tikzCenter" style="margin-right:1cm">Centrer le repère</label>
 <input type="checkbox" id="tikzLabels"> <label for="tikzLabels" style="margin-right:1cm">Graduations</label>
 <input type="checkbox" id="tikzSubGrid"> <label for="tikzSubGrid" style="margin-right:1cm">Sous-grille</label>
-<input type="checkbox" id="tikzPgfplots"> <label for="tikzPgfplots" style="margin-right:1cm">Mode pgfplots (avec styles à définir)</label>
+<input type="checkbox" id="tikzPgfplots"> <label for="tikzPgfplots" style="margin-right:1cm">Mode pgfplots (avancé: styles à définir)</label>
 </p>
 
 <h3> Propriétés des courbes </h3>

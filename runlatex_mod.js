@@ -10,7 +10,7 @@ var runlatex={}
 
 runlatex.texts ={
     "Open in Overleaf": "Ouvrir dans Overleaf",
-    "TeXLive.net":      "Compiler la courbe en LaTeX", // or "run latex" or whatever
+    "TeXLive.net":      "Compiler le graphique", // or "run latex" or whatever
     "Delete Output":    "Supprimer la sortie",
     "Compiling PDF":    "Compiling PDF",
     // The following not used on learnlatex.org
@@ -294,11 +294,21 @@ function deleteoutput(nd){
 }
 
 function generatepreamble(t,e) {
-	if (tikzCenterSelect.checked) {
-		t = t.slice(15,-13);
+	if (! tikzPreambleSelect.checked) {
+		t = "\\begin{tikzpicture}\n"+t+"\n\\end{tikzpicture}";
 	}
-	
-	t = "\\documentclass{standalone}\n\\usepackage[svgnames]{xcolor}\n\\usepackage{tikz}\n\\usepackage{tkz-base}\n\\usepackage{mathrsfs}\n\\begin{document}\n"+t+"\n\\end{document}";
+	else {
+		if (tikzCenterSelect.checked) {
+			t = t.slice(15,-13);
+		}
+	}
+	var before = "\\documentclass{standalone}\n\\usepackage[svgnames]{xcolor}\n\\usepackage{tikz}\n\\usepackage{tkz-base}\n\\usepackage{mathrsfs}\n"
+	if ( tikzPgfplotsSelect.checked && tikzPreambleSelect.checked ) {
+		before = before + "\\usepackage{pgfplots}\n\\pgfplotsset{\n\tcompat=1.18,\n\tstyleglobal/.style={\n\t\taxis lines=middle,\n\t\txlabel={$x$},\n\t\tylabel={$y$},\n\t\tlabel style= {font=\\scriptsize},\n\t\tminor x tick num=1,\n\t\tminor y tick num=1,\n\t\txtick distance=1,\n\t\tytick distance=1,\n\t\ttick label style = {font=\\scriptsize},\n\t\tgrid=both,\n\t\tgrid style={densely dashed,line width=0.4pt,draw=black!30},\n\t\tminor grid style={densely dashed,line width=0.25pt,draw=black!20},\n\t},\n\tstyleplot/.style={\n\t\tsamples=201,\n\t\tsmooth,\n\t\tline width=1pt\n\t}\n}\n";
+		t = t.slice(0,46)+"\ndomain="+xmin.toString()+":"+xmax.toString()+","+t.slice(46)
+	}
+	t = before + "\n\\begin{document}\n" + t + "\n\\end{document}";
+	//console.log(t);
     return t
 }
 
