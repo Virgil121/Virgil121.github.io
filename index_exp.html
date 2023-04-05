@@ -1039,8 +1039,11 @@ function init() {
 	tikzTangentsColorsSelect.onclick = function() { printTikzCode(); };
 	
 	textBox = editors["pre0"].session;
-	tikzInputBox = document.getElementById("tikzInput");
-    
+	tikzInputBox = editors["pre1"].session;
+	tikzInputBox.setValue("");
+    editors["pre0"].setOption("minLines",10);
+	editors["pre1"].setOption("minLines",10);
+	
 	resetCubicPoints();
     document.addEventListener("mouseup", doMouseUp, false);
     cubicCanvas.addEventListener("mousedown", doCubicMouseDown, false);
@@ -1049,7 +1052,7 @@ function init() {
 };
 
 function importCubic() {
-	var code = tikzInputBox.value;
+	var code = tikzInputBox.getValue();
 	var importListOfPoints = [];
 	var importListOfPointsPrecise = [];
 	var importCoords = [];
@@ -1179,9 +1182,9 @@ Des exemples de courbes générées par cet outil sont disponibles <a href="/exe
 
 <div class="h">
 <pre id="compiler">
-  \documentclass{article}
-  \begin{document}
-  \end{document}
+\documentclass{article}
+\begin{document}
+ \end{document}
 </pre>
 </div>
 
@@ -1193,7 +1196,13 @@ Des exemples de courbes générées par cet outil sont disponibles <a href="/exe
 
 <input type="button" value="Importer la courbe" onClick="importCubic()">
 
-<textarea id="tikzInput" rows="5" style="width:100%; background-color:white; padding:5px; border-color:black; border:1px solid; font-size: 12px;"> </textarea>
+<div class="h">
+<pre id="tikzInput" class="norun">
+\documentclass{article}
+\begin{document}
+\end{document}
+</pre>
+</div>
 
 <p style="font-style=italic; margin-top:1cm;"> v1.7 - Basé sur <a href="https://math.hws.edu/eck/cs424/notes2013/canvas/bezier.html">Bezier Curve Demos</a> - Intégration Tikz et ajout de fonctionnalités par V.Delauney. Nombre de visites: <span id="visites"></span> </p>
 

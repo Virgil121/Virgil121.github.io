@@ -299,12 +299,13 @@ function generatepreamble(t,e) {
 	}
 	else {
 		if (tikzCenterSelect.checked) {
-			t = t.slice(15,-13);
+			t = t.replace("\\begin{center}\n","");
+			t = t.replace("\n\\end{center}","");
 		}
 	}
 	var before = "\\documentclass{standalone}\n\\usepackage[svgnames]{xcolor}\n\\usepackage{tikz}\n\\usepackage{tkz-base}\n\\usepackage{mathrsfs}\n"
 	if ( tikzPgfplotsSelect.checked && tikzPreambleSelect.checked ) {
-		before = before + "\\usepackage{pgfplots}\n\\pgfplotsset{\n\tcompat=1.18,\n\tstyleglobal/.style={\n\t\taxis lines=middle,\n\t\txlabel={$x$},\n\t\tylabel={$y$},\n\t\tlabel style= {font=\\scriptsize},\n\t\tminor x tick num=1,\n\t\tminor y tick num=1,\n\t\txtick distance=1,\n\t\tytick distance=1,\n\t\ttick label style = {font=\\scriptsize},\n\t\tgrid=both,\n\t\tgrid style={densely dashed,line width=0.4pt,draw=black!30},\n\t\tminor grid style={densely dashed,line width=0.25pt,draw=black!20},\n\t},\n\tstyleplot/.style={\n\t\tsamples=201,\n\t\tsmooth,\n\t\tline width=1pt\n\t}\n}\n";
+		before = before + "\\usepackage{pgfplots}\n\\pgfplotsset{\n\tcompat=1.18,\n\tstyleglobal/.style={\n\t\taxis lines=middle,\n\t\txlabel={$x$},\n\t\tylabel={$y$},\n\t\tlabel style= {font=\\scriptsize},\n\t\tminor x tick num=1,\n\t\tminor y tick num=1,\n\t\txtick distance=1,\n\t\tytick distance=1,\n\t\ttick label style = {font=\\scriptsize},\n\t\tgrid=both,\n\t\tgrid style={densely dashed,line width=0.4pt,draw=black!30},\n\t\tminor grid style={densely dashed,line width=0.25pt,draw=black!20},\n\t},\n\tstyleplot/.style={\n\t\tsamples=201,\n\t\tsmooth,\n\t\tline width=1pt\n\t}\n}\n\\tikzset{\n\tstylepoint/.style={\n\t\tdraw=black,\n\t\tcircle,\n\t\tfill,\n\t\tinner sep=1.2pt,\n\t\tsemithick\n\t}\n}\n";
 		t = t.slice(0,46)+"\ndomain="+xmin.toString()+":"+xmax.toString()+","+t.slice(46)
 	}
 	t = before + "\n\\begin{document}\n" + t + "\n\\end{document}";
