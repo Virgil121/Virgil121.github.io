@@ -920,6 +920,7 @@ function changeActiveCurve(newIndex) {
 function deleteCurve() {
 	if ( cubicCurves.length > 1 ) {
 		cubicCurves.splice(activeCubicIndex,1);
+		cubicCurvesPrecise.splice(activeCubicIndex,1);
 		changeActiveCurve(0);
 		printTikzCode();
 	}
