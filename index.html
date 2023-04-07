@@ -1145,9 +1145,9 @@ html {
 
 body {
 	background-color: #F9F9F9;
-	width:1220px;
+	width:1210px;
 	margin:0px auto;
-	padding:30px;
+	padding:25px;
 }
 
 h1 {
@@ -1240,7 +1240,7 @@ Please use a newer version or a different browser.</p>
 <p id="message" style="font-weight: bold"></p>
 
 <p>
-Cet outil permet de créer des courbes sur l'interface graphique ci-dessous en positionnant des points de passage et des tangentes, puis de les exporter en code tikz pour une intégration LaTeX. Le package <b><code>tkz-base</code></b> est requis pour créer le repère. <b><code>mathrsfs</code></b> est utilisé pour les labels sur les courbes. <b><code>xcolor</code></b> avec l'option <b><code>svgnames</code></b> est utilisé pour colorer les courbes.<br>
+Cet outil permet de créer des courbes sur l'interface graphique ci-dessous en positionnant des points de passage et des tangentes, puis de les exporter en code tikz pour une intégration LaTeX. Le packages suivants sont utilisés: <b><code>tkz-base</code></b> pour créer le repère, <b><code>mathrsfs</code></b> pour les labels sur les courbes, et <b><code>xcolor</code></b> avec l'option <b><code>svgnames</code></b> pour les couleurs.<br>
 Pour une utilisation avec Word, un clic droit -> Enregistrer l'image est envisageable. Il est maintenant possible d'exporter les courbes en pdf, grâce à une compilation LaTeX en ligne.<br>
 Des exemples de courbes générées par cet outil sont disponibles <a href="/exemples.pdf">ici</a>.
 En cas de problème, une version plus ancienne est disponible <a href="/index_legacy">ici</a>.
@@ -1248,7 +1248,7 @@ En cas de problème, une version plus ancienne est disponible <a href="/index_le
 <li> Pour insérer ou supprimer un point, il suffit de double-cliquer. </li>
 <li> Les coordonnées sont arrondies au dixième. De plus, appuyer sur <b>Ctrl</b> avant ou pendant le déplacement d'un point permet de le positionner sur la grille, facilitant le placement.</li>
 <li> Le mode intelligent permet d'insérer un nouveau point dans une courbe existante. Il ne fonctionne correctement que si les points de contrôle principaux (noirs) sont classés par abscisses croissantes (utile pour représenter des fonctions f:R -> R). S'il est désactivé, les nouveaux points sont ajoutés après le dernier. </li>
-<li> Appuyer sur <b>Shift (Maj)</b> avant ou pendant le déplacement d'un point de contrôle secondaire permet de le déplacer sur la tangente, permettant d'ajuster plus finement la courbe. <!--(la courbe (R -> R²) n'est plus C1 mais la fonction associée (R -> R) le reste)--> </li>
+<li> Appuyer sur <b>Shift (Maj)</b> avant ou pendant le déplacement d'un point de contrôle secondaire permet de le déplacer sur la tangente afin de faire des ajustements fins. <!--(la courbe (R -> R²) n'est plus C1 mais la fonction associée (R -> R) le reste)--> </li>
 <li> <i>(Déconseillé) On peut déverouiller les points de contrôle pour les ajuster indépendamment, mais la courbe sera alors moins régulière.</i> </li>
 </ul>
 </p>
