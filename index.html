@@ -25,6 +25,8 @@ function websiteVisits(response) {
 <script src="https://api.countapi.xyz/hit/virgil121.github.io/3dcdfe2c-fc27-48e2-926a-0bf6e587aa3a?callback=websiteVisits">
 </script>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.min.js"></script>
+<script src="runlatex_mod.js"></script>
 <!-- Bezier -->
 <script type="text/javascript">
 
@@ -56,6 +58,7 @@ var tikzCubicLabelSelect;
 var tikzTangentsSelect;
 var tikzTangentsColorsSelect;
 var textBox;
+var compilerBox;
 var tikzInputBox;
 
 var cubicCanvasWidth=1200;
@@ -70,9 +73,10 @@ var pixelSnap=precisionSnap * pixelsUnit;
 var xmin,xmax,ymin,ymax;
 
 var tangentColors = ["DarkBlue","DarkRed","DarkGreen","OrangeRed","MediumVioletRed"]; // densely dashed, densely dotted, dash pattern={on 2pt off 2pt on 6pt off 2pt}
-var tangentPointsColors = ["blue","red","green","OrangeRed","MediumVioletRed"];
+var tangentPointsColors = ["blue","red","green","Coral","magenta"];
 
 var cubicColors = ["black","DarkBlue","DarkRed","DarkGreen","OrangeRed","MediumVioletRed"];
+var cubicPointsColors = ["lightgray","blue","red","green","Coral","magenta"];
 var functionNames = ["f","g","h","i","j"]
 var alphabet = ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"];
 var currentLetterIndex = 0;
@@ -191,7 +195,7 @@ function cubicDraw() {
 	cubicGraphics.strokeStyle = "#505050";
 	cubicGraphics.lineWidth = 2;
 	cubicGraphics.stroke();
-	cubicGraphics.font='16px Arial';
+	cubicGraphics.font="16px Arial";
 	cubicGraphics.fillStyle = "black";
 	cubicGraphics.textAlign = 'center';
 	cubicGraphics.fillText(0,cubicCanvasWidth/2-10,cubicCanvasHeight/2+18);
@@ -444,7 +448,12 @@ function generateDrawCommands(i) {
 					res = res + "\n"+space+"\\addplot[styleplot";
 				}
 				else {
-					res = res + "\n"+space+"\\draw[domain=\\bezierXmin:\\bezierXmax,line width=1pt";
+					if ( tikzPreambleSelect.checked ) {
+						res = res + "\n"+space+"\\draw[domain=\\bezierXmin:\\bezierXmax,line width=1pt";
+					}
+					else {
+					res = res + "\n"+space+"\\draw[domain="+xmin.toString()+":"+xmax.toString()+",line width=1pt";
+					}
 				}
 				if ( tikzTangentsColorsSelect.checked ) {
 					var col = tangentColors[numGlobalTangent % tangentColors.length];
@@ -486,7 +495,7 @@ function generateDrawCommands(i) {
 				var p0 = listOfPointsPrecise[j];
 				var p1 = listOfPointsPrecise[j+1];
 				if (tikzTangentsColorsSelect.checked) {
-					res = res + "\n"+space+"\\draw "+pointToStr(p0)+" node["+stylepoint+",fill="+curveColor+"] {}";
+					res = res + "\n"+space+"\\draw "+pointToStr(p0)+" node["+stylepoint+",fill="+cubicPointsColors[i]+"] {}";
 				}
 				else {
 					res = res + "\n"+space+"\\draw "+pointToStr(p0)+" node["+stylepoint+",fill=black] {}";
@@ -517,6 +526,7 @@ function printTikzCode() {
 			space = "";
 		}
 	// Tikz preamble
+	setLimits();
 	if ( tikzPreambleSelect.checked ) {
 		if ( tikzPgfplotsSelect.checked ) {
 			if ( tikzCenterSelect.checked ) {
@@ -535,7 +545,6 @@ function printTikzCode() {
 				res = "\\begin{center}\n";
 			}
 			res = res + "\\begin{tikzpicture}";
-			setLimits();
 			var xRange = xmax - xmin;
 			if ( xRange > 14 ) {
 				var scale = Math.round(1400 / xRange)/100;
@@ -551,6 +560,9 @@ function printTikzCode() {
 			}
 			res = res + "\\tkzDrawX[right space=0pt,above left=4pt,font=\\scriptsize] %Axe X\n\t\\tkzDrawY[up space=0pt,below right=4pt,font=\\scriptsize] %Axe Y\n\t\\clip (\\bezierXmin,\\bezierYmin) rectangle (\\bezierXmax,\\bezierYmax);\n\t%\n\t% Courbes\n\t%\n\t";
 		}
+	}
+	else {
+		res = res + "\\clip ("+xmin.toString()+","+ymin.toString()+") rectangle ("+xmax.toString()+","+ymax.toString()+");\n";
 	}
 	numGlobalTangent = 0;
 	currentLetterIndex = 0;
@@ -573,14 +585,8 @@ function printTikzCode() {
 				res = res + "\n\\end{center}";
 			}
 	}
-	textBox.innerHTML=res;
+	textBox.setValue(res);
 }
-
-
-
-
-
-
 
 ///////////////////////////////////////////////
 //                  EVENTS                   //
@@ -970,6 +976,19 @@ function togglePointsLabelsCheckbox() {
 	}
 }
 
+function toggleEnvironmentCheckbox() {
+	if (tikzCenterSelect.disabled == true) {
+		tikzCenterSelect.disabled = false;
+		tikzLabelsSelect.disabled = false;
+		tikzSubGridSelect.disabled = false;
+	}
+	else {
+		tikzCenterSelect.disabled = true;
+		tikzLabelsSelect.disabled = true;
+		tikzSubGridSelect.disabled = true;
+	}
+}
+
 function init() {
     try {
         cubicCanvas = document.getElementById("cubic");
@@ -998,7 +1017,7 @@ function init() {
 	
 	tikzPreambleSelect = document.getElementById("tikzPreamble");
 	tikzPreambleSelect.checked = true;
-	tikzPreambleSelect.onclick = function() { printTikzCode(); };
+	tikzPreambleSelect.onclick = function() { toggleEnvironmentCheckbox(); printTikzCode(); };
 	
 	tikzCenterSelect = document.getElementById("tikzCenter");
 	tikzCenterSelect.checked = true;
@@ -1040,9 +1059,12 @@ function init() {
 	tikzTangentsColorsSelect.checked = true;
 	tikzTangentsColorsSelect.onclick = function() { printTikzCode(); };
 	
-	textBox = document.getElementById("coordinates");
-	tikzInputBox = document.getElementById("tikzInput");
-    
+	textBox = editors["pre0"].session;
+	tikzInputBox = editors["pre1"].session;
+	tikzInputBox.setValue("");
+    editors["pre0"].setOption("minLines",10);
+	editors["pre1"].setOption("minLines",10);
+	
 	resetCubicPoints();
     document.addEventListener("mouseup", doMouseUp, false);
     cubicCanvas.addEventListener("mousedown", doCubicMouseDown, false);
@@ -1051,7 +1073,7 @@ function init() {
 };
 
 function importCubic() {
-	var code = tikzInputBox.value;
+	var code = tikzInputBox.getValue();
 	var importListOfPoints = [];
 	var importListOfPointsPrecise = [];
 	var importCoords = [];
@@ -1089,19 +1111,111 @@ function importCubic() {
 
 // onClick="this.select();"
 
+
+function generatepreamble(t,e) { // Used in runlatex_mod.js
+	if (! tikzPreambleSelect.checked) {
+		t = "\\begin{tikzpicture}\n"+t+"\n\\end{tikzpicture}";
+	}
+	else {
+		if (tikzCenterSelect.checked) {
+			t = t.replace("\\begin{center}\n","");
+			t = t.replace("\n\\end{center}","");
+		}
+	}
+	var before = "\\documentclass{standalone}\n\\usepackage[svgnames]{xcolor}\n\\usepackage{tikz}\n\\usepackage{tkz-base}\n\\usepackage{mathrsfs}\n"
+	if ( tikzPgfplotsSelect.checked && tikzPreambleSelect.checked ) {
+		before = before + "\\usepackage{pgfplots}\n\\pgfplotsset{\n\tcompat=1.18,\n\tstyleglobal/.style={\n\t\taxis lines=middle,\n\t\txlabel={$x$},\n\t\tylabel={$y$},\n\t\tlabel style= {font=\\scriptsize},\n\t\tminor x tick num=1,\n\t\tminor y tick num=1,\n\t\txtick distance=1,\n\t\tytick distance=1,\n\t\ttick label style = {font=\\scriptsize},\n\t\tgrid=both,\n\t\tgrid style={densely dashed,line width=0.4pt,draw=black!30},\n\t\tminor grid style={densely dashed,line width=0.25pt,draw=black!20},\n\t},\n\tstyleplot/.style={\n\t\tsamples=201,\n\t\tsmooth,\n\t\tline width=1pt\n\t}\n}\n\\tikzset{\n\tstylepoint/.style={\n\t\tdraw=black,\n\t\tcircle,\n\t\tfill,\n\t\tinner sep=1.2pt,\n\t\tsemithick\n\t}\n}\n";
+		t = t.slice(0,46)+"\ndomain="+xmin.toString()+":"+xmax.toString()+","+t.slice(46)
+	}
+	t = before + "\n\\begin{document}\n" + t + "\n\\end{document}";
+	//console.log(t);
+    return t
+}
+
 </script>
 
 <style>
 
-html {background-color: #E3E3E3}
-body {background-color: #F9F9F9; width:1200px; margin:0px auto; padding:30px;}
+html {
+	background-color: #E3E3E3;
+	font-family:"Source Sans Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+	line-height:1.4;
+	font-size:1rem;
+}
 
-h1 { text-align:center;<-color:#B74126;-> margin-top:0px;margin-top:0px;}
-h2 { margin-left: 1cm; font-weight: bold;<-color: #D44B2B;->font-family: ;border-color: #D44B2B;background: none;}
-h3 { margin-left: 2cm;<-color:#991c00;-> margin-left:15px; padding-bottom:0.2rem; margin-bottom:0.2rem; margin-right:10px; padding-left:10px }
-h4 { <-color:#801700;-> margin-left:50px; font-size:1rem }
-p { text-align:justify }
-li { text-align:justify }
+body {
+	background-color: #F9F9F9;
+	width:1280px;
+	margin:0px auto;
+	padding:30px;
+}
+
+h1 {
+	text-align:center;
+	margin-top:0px;
+	font-size:2.5rem;
+	font-weight:500;
+	line-height:1.2;
+	margin-block-start: 0em;
+    margin-block-end: 0.67em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+	/* font-weight:bold;
+	color: #D44B2B;
+	font-family: Ubuntu,Arial,Helvetica,sans-serif;
+	padding-bottom:10px;
+	border-bottom:2px solid #D44B2B; */
+}
+
+h2 {
+	font-size:2rem;
+	font-weight:500;
+	line-height:1.2;
+    margin-block-start: 0.83em;
+    margin-block-end: 0.83em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+	/* font-weight: bold;
+	padding-left:1em;
+	color: #991c00;
+	font-family: Ubuntu,Arial,Helvetica,sans-serif;
+	padding-bottom:5px;
+	border-bottom: 1px solid #d3b4ac; */
+}
+
+h3 {
+	font-size:1.75rem;
+	font-weight:500;
+	line-height:1.2;
+    margin-block-start: 1em;
+    margin-block-end: 1em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+	margin-left:1em;
+	/* margin-left: 2cm;
+	color:#991c00;
+	padding-bottom:0.2rem;
+	margin-bottom:0.2rem;
+	margin-right:10px;
+	padding-left:10px */
+}
+
+p {
+	text-align:justify
+}
+
+li {
+	text-align:justify
+}
+
+input[type="checkbox"] {
+	transform: scale(1.2)
+}
+
+input[type="button"], button {
+	font-family:"Source Sans Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+	font-size:1rem;
+}
 
 .boutonrouge { float:right;background-color:#CC4444;color:#FFFFFF;}
 .boutonrouge:hover { background-color:#991111;}
@@ -1126,14 +1240,15 @@ Please use a newer version or a different browser.</p>
 <p id="message" style="font-weight: bold"></p>
 
 <p>
-Cet outil permet de créer des courbes sur l'interface graphique ci-dessous en positionnant des points de passage et des tangentes, puis de les exporter en code tikz pour une intégration LaTeX. Le package <i>tkz-base</i> est requis pour créer le repère. <i>mathrsfs</i> est utilisé pour les labels sur les courbes.<br>
-Un clic droit -> Enregistrer l'image sous ou une capture d'écran sont aussi envisageables pour une utilisation avec Word.<br>
+Cet outil permet de créer des courbes sur l'interface graphique ci-dessous en positionnant des points de passage et des tangentes, puis de les exporter en code tikz pour une intégration LaTeX. Le package <b><code>tkz-base</code></b> est requis pour créer le repère. <b><code>mathrsfs</code></b> est utilisé pour les labels sur les courbes. <b><code>xcolor</code></b> avec l'option <b><code>svgnames</code></b> est utilisé pour colorer les courbes.<br>
+Pour une utilisation avec Word, un clic droit -> Enregistrer l'image est envisageable. Il est maintenant possible d'exporter les courbes en pdf, grâce à une compilation LaTeX en ligne.<br>
 Des exemples de courbes générées par cet outil sont disponibles <a href="/exemples.pdf">ici</a>.
+En cas de problème, une version plus ancienne est disponible <a href="/index_legacy">ici</a>.
 <ul>
 <li> Pour insérer ou supprimer un point, il suffit de double-cliquer. </li>
-<li> Les coordonnées sont arrondies au dixième. De plus, appuyer sur <b>Ctrl</b> avant ou pendant le déplacement d'un point permet de le positionner sur la grille, facilitant le placement dans des cas simples.</li>
+<li> Les coordonnées sont arrondies au dixième. De plus, appuyer sur <b>Ctrl</b> avant ou pendant le déplacement d'un point permet de le positionner sur la grille, facilitant le placement.</li>
 <li> Le mode intelligent permet d'insérer un nouveau point dans une courbe existante. Il ne fonctionne correctement que si les points de contrôle principaux (noirs) sont classés par abscisses croissantes (utile pour représenter des fonctions f:R -> R). S'il est désactivé, les nouveaux points sont ajoutés après le dernier. </li>
-<li> Appuyer sur <b>Shift (Maj)</b> avant ou pendant le déplacement d'un point de contrôle secondaire permet de le déplacer sur la tangente, permettant de garder une certaine régularité <!--(la courbe (R -> R²) n'est plus C1 mais la fonction associée (R -> R) le reste)--> tout en ayant un contrôle plus fin. </li>
+<li> Appuyer sur <b>Shift (Maj)</b> avant ou pendant le déplacement d'un point de contrôle secondaire permet de le déplacer sur la tangente, permettant d'ajuster plus finement la courbe. <!--(la courbe (R -> R²) n'est plus C1 mais la fonction associée (R -> R) le reste)--> </li>
 <li> <i>(Déconseillé) On peut déverouiller les points de contrôle pour les ajuster indépendamment, mais la courbe sera alors moins régulière.</i> </li>
 </ul>
 </p>
@@ -1148,7 +1263,7 @@ Des exemples de courbes générées par cet outil sont disponibles <a href="/exe
 <input class="boutonrouge" type="button" value="Supprimer la courbe" id="reset" onClick="deleteCurve()" style="margin-right:0.2cm;">
 </p>
 
-<canvas id="cubic" style="background-color: white; border: thin solid black; width:1200px; height:840px"></canvas>
+<canvas id="cubic" style="display: block; background-color: white; border: thin solid black; width:1200px; height:840px; margin:auto;"></canvas>
 
 <h2> Export Tikz </h2>
 
@@ -1159,7 +1274,7 @@ Des exemples de courbes générées par cet outil sont disponibles <a href="/exe
 <input type="checkbox" id="tikzCenter"> <label for="tikzCenter" style="margin-right:1cm">Centrer le repère</label>
 <input type="checkbox" id="tikzLabels"> <label for="tikzLabels" style="margin-right:1cm">Graduations</label>
 <input type="checkbox" id="tikzSubGrid"> <label for="tikzSubGrid" style="margin-right:1cm">Sous-grille</label>
-<input type="checkbox" id="tikzPgfplots"> <label for="tikzPgfplots" style="margin-right:1cm">Mode pgfplots (avec styles à définir)</label>
+<input type="checkbox" id="tikzPgfplots"> <label for="tikzPgfplots" style="margin-right:1cm">Mode pgfplots (avancé: styles à définir)</label>
 </p>
 
 <h3> Propriétés des courbes </h3>
@@ -1176,22 +1291,34 @@ Des exemples de courbes générées par cet outil sont disponibles <a href="/exe
 
 <p class="options">
 <input type="checkbox" id="tikzTangents"> <label for="tikzTangents" style="margin-right:1cm">Afficher les tangentes (non verticales uniquement)</label>
-<input type="checkbox" id="tikzTangentsColors"> <label for="tikzTangentsColors" style="margin-right:1cm">Colorer les courbes ([svgnames]xcolor requis)</label>
+<input type="checkbox" id="tikzTangentsColors"> <label for="tikzTangentsColors" style="margin-right:1cm">Colorer les courbes</label>
 </p>
 
-<textarea readonly id="coordinates" rows="33" style="width:100%; background-color:white; padding:5px; border-color:black; border:1px solid; font-size: 12px;"> </textarea>
+<div class="h">
+<pre id="compiler">
+\documentclass{article}
+\begin{document}
+ \end{document}
+</pre>
+</div>
 
 <h2> Import Tikz </h2>
 
-<p> Entrez le code Tikz d'une courbe de Bezier dans la zone ci-dessous (Le bloc \draw ... uniquement et sans parenthèses autres que les coordonnées). La courbe active sera alors remplacée par la votre.</p>
+<p> Entrez le code Tikz d'une courbe de Bezier dans la zone ci-dessous (Le bloc <code>\draw ...</code> uniquement et sans parenthèses autres que les coordonnées). La courbe active sera alors remplacée par la votre.</p>
 
-<!--Attention, si la courbe a été finement retouchée (avec Maj), les tangentes seront moins précises. -- Précision améliorée (1.6c)-->
+<!--Attention, si la courbe a été finement retouchée (avec Maj), les tangentes seront moins précises.-->
 
 <input type="button" value="Importer la courbe" onClick="importCubic()">
 
-<textarea id="tikzInput" rows="5" style="width:100%; background-color:white; padding:5px; border-color:black; border:1px solid; font-size: 12px;"> </textarea>
+<div class="h">
+<pre id="tikzInput" class="norun">
+\documentclass{article}
+\begin{document}
+\end{document}
+</pre>
+</div>
 
-<p style="font-style=italic; margin-top:1cm;"> v1.6c - Basé sur <a href="https://math.hws.edu/eck/cs424/notes2013/canvas/bezier.html">Bezier Curve Demos</a> - Intégration Tikz et ajout de fonctionnalités par V.Delauney. Nombre de visites: <span id="visites"></span> </p>
+<p style="font-style=italic; margin-top:1cm;"> v1.7a - Basé sur <a href="https://math.hws.edu/eck/cs424/notes2013/canvas/bezier.html">Bezier Curve Demos</a> - Intégration Tikz et ajout de fonctionnalités par V.Delauney. Licence MIT. Nombre de visites: <span id="visites"></span> </p>
 
 <!--
 v1.0 - Lancement
@@ -1210,9 +1337,10 @@ v1.6 - Export pgfplots perso
 v1.6a - Meilleure précision des tangentes, mais pas encore à l'import...
 v1.6b - Compteur de visites
 v1.6c - Points de contrôles nommés, avec placement automatique du label, précision des tangentes à l'import amélioré
+v1.7 - Compilation en ligne
+v1.7a - CSS retravaillé
 
 Idées:
-printPgfplots et printTkzbase (séparation)
 Fonction autrePointControle(i) if ...
 Désactiver grille principale et Option pointillés vers points de contrôle
 Option tangente ou Flèches avec pts de contrôle
