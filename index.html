@@ -49,6 +49,7 @@ var smartInsertionSelect;
 var tikzPreambleSelect;
 var tikzCenterSelect;
 var tikzLabelsSelect;
+var tikzGridSelect;
 var tikzSubGridSelect;
 var tikzPgfplotsSelect;
 var tikzStartEndPointsSelect;
@@ -534,7 +535,10 @@ function printTikzCode() {
 			}
 			setLimits();
 			res = res + "\\begin{tikzpicture}\n\\begin{axis}[\nstyleglobal,\nwidth=0.9\\linewidth,\nxmin="+xmin.toString()+", xmax="+xmax.toString()+",\nymin="+ymin.toString()+", ymax="+ymax.toString()+",";
-			if ( ! tikzSubGridSelect.checked ) {
+			if ( ! tikzGridSelect.checked ) {
+				res = res + "\nticks=none,\ngrid=none,";
+			}
+			if ( ! tikzGridSelect.checked || ! tikzSubGridSelect.checked ) {
 				res = res + "\nminor x tick num=0,\nminor y tick num=0,";
 			}
 			res=res+"\n]\n";
@@ -550,15 +554,30 @@ function printTikzCode() {
 				var scale = Math.round(1400 / xRange)/100;
 				res = res + "[scale="+scale.toString()+"]";
 			}
-			res = res + "\n\t%\n\t% Limites du repère modifiables\n\t\\def\\bezierXmin{"+xmin.toString()+"}\n\t\\def\\bezierXmax{"+xmax.toString()+"}\n\t\\def\\bezierYmin{"+ymin.toString()+"}\n\t\\def\\bezierYmax{"+ymax.toString()+"}\n\t%\n\t% Grille\n\t"
-			if ( tikzSubGridSelect.checked ) {
-				res = res + "\\draw[step=0.5,densely dashed,line width=0.25pt,draw=black!20] (\\bezierXmin,\\bezierYmin) grid (\\bezierXmax,\\bezierYmax);\n\t";
+			res = res + "\n\t%\n\t% Limites du repère modifiables\n\t\\def\\bezierXmin{"+xmin.toString()+"}\n\t\\def\\bezierXmax{"+xmax.toString()+"}\n\t\\def\\bezierYmin{"+ymin.toString()+"}\n\t\\def\\bezierYmax{"+ymax.toString()+"}\n\t";
+			// Grids
+			if ( tikzGridSelect.checked ) {
+				res = res + "%\n\t% Grille\n\t";
+				if ( tikzSubGridSelect.checked ) {
+					res = res + "\\draw[step=0.5,densely dashed,line width=0.25pt,draw=black!20] (\\bezierXmin,\\bezierYmin) grid (\\bezierXmax,\\bezierYmax);\n\t";
+				}
+				res = res + "\\draw[step=1,densely dashed,line width=0.4pt,draw=black!30] (\\bezierXmin,\\bezierYmin) grid (\\bezierXmax,\\bezierYmax);";
 			}
-			res = res + "\\draw[step=1,densely dashed,line width=0.4pt,draw=black!30] (\\bezierXmin,\\bezierYmin) grid (\\bezierXmax,\\bezierYmax);\n\t%\n\t% Création des axes avec tkz-base\n\t\\tkzInit[xmin=\\bezierXmin,xmax=\\bezierXmax,ymin=\\bezierYmin,ymax=\\bezierYmax]\n\t\\tkzSetUpAxis[ticka=3.5pt,tickb=3.5pt]	%Taille graduations\n\t"
+			// tkz-base initialisation
+			res = res + "%\n\t% Création des axes avec tkz-base\n\t\\tkzInit[xmin=\\bezierXmin,xmax=\\bezierXmax,ymin=\\bezierYmin,ymax=\\bezierYmax]\n\t";
+			// Graduations , ticks
+			var isTicks = "";
+			if ( ! tikzLabelsSelect.checked && ! tikzGridSelect.checked ) {
+				isTicks = ",noticks";
+			}
+			else {
+				res = res + "\\tkzSetUpAxis[ticka=2.5pt,tickb=2.5pt]	%Taille graduations\n\t"
+			}
 			if ( tikzLabelsSelect.checked ) {
 				res = res + "\\tkzLabelX[font=\\scriptsize,orig=false,fill=none] % Graduations X \n\t\\tkzLabelY[font=\\scriptsize,orig=false,fill=none] % Graduations Y\n\t";
 			}
-			res = res + "\\tkzDrawX[right space=0pt,above left=4pt,font=\\scriptsize] %Axe X\n\t\\tkzDrawY[up space=0pt,below right=4pt,font=\\scriptsize] %Axe Y\n\t\\clip (\\bezierXmin,\\bezierYmin) rectangle (\\bezierXmax,\\bezierYmax);\n\t%\n\t% Courbes\n\t%\n\t";
+			// Draw axis
+			res = res + "\\tkzDrawX[right space=0pt,above left=4pt,font=\\scriptsize"+isTicks+"] %Axe X\n\t\\tkzDrawY[up space=0pt,below right=4pt,font=\\scriptsize"+isTicks+"] %Axe Y\n\t\\clip (\\bezierXmin,\\bezierYmin) rectangle (\\bezierXmax,\\bezierYmax);\n\t%\n\t% Courbes\n\t%\n\t";
 		}
 	}
 	else {
@@ -980,11 +999,24 @@ function toggleEnvironmentCheckbox() {
 	if (tikzCenterSelect.disabled == true) {
 		tikzCenterSelect.disabled = false;
 		tikzLabelsSelect.disabled = false;
-		tikzSubGridSelect.disabled = false;
+		tikzGridSelect.disabled = false;
+		if ( tikzGridSelect.checked == true ) {
+			tikzSubGridSelect.disabled = false;
+		}
 	}
 	else {
 		tikzCenterSelect.disabled = true;
 		tikzLabelsSelect.disabled = true;
+		tikzGridSelect.disabled = true;
+		tikzSubGridSelect.disabled = true;
+	}
+}
+
+function toggleSubGridCheckbox() {
+	if (tikzSubGridSelect.disabled == true) {
+		tikzSubGridSelect.disabled = false;
+	}
+	else {
 		tikzSubGridSelect.disabled = true;
 	}
 }
@@ -1026,6 +1058,10 @@ function init() {
 	tikzLabelsSelect = document.getElementById("tikzLabels");
 	tikzLabelsSelect.checked = true;
 	tikzLabelsSelect.onclick = function() { printTikzCode(); };
+	
+	tikzGridSelect = document.getElementById("tikzGrid");
+	tikzGridSelect.checked = true;
+	tikzGridSelect.onclick = function() { toggleSubGridCheckbox(); printTikzCode(); };
 	
 	tikzSubGridSelect = document.getElementById("tikzSubGrid");
 	tikzSubGridSelect.checked = true;
@@ -1145,9 +1181,9 @@ html {
 
 body {
 	background-color: #F9F9F9;
-	width:1210px;
+	width:1220px;
 	margin:0px auto;
-	padding:25px;
+	padding:30px;
 }
 
 h1 {
@@ -1191,7 +1227,7 @@ h3 {
     margin-block-end: 1em;
     margin-inline-start: 0px;
     margin-inline-end: 0px;
-	margin-left:1em;
+	margin-left:7mm;
 	/* margin-left: 2cm;
 	color:#991c00;
 	padding-bottom:0.2rem;
@@ -1209,18 +1245,65 @@ li {
 }
 
 input[type="checkbox"] {
-	transform: scale(1.2)
+	transform: scale(1.3);
+	margin-right:5px;
+}
+
+input[type="checkbox"]:checked {
+	accent-color:#0d6efd;
 }
 
 input[type="button"], button {
 	font-family:"Source Sans Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 	font-size:1rem;
+	font-weight:bold;
+	cursor: pointer;
+    outline: 0;
+    display: inline-block;
+    line-height: 1.5;
+    text-align: center;
+    background-color: white;
+    border: 1px solid transparent;
+    padding: 2px 12px;
+    font-size: 1rem;
+    border-radius: .25rem;
+    transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+    color: #0d6efd;
+    border-color: #0d6efd;
+	vertical-align:center;
+	margin:2px 8px;
 }
 
-.boutonrouge { float:right;background-color:#CC4444;color:#FFFFFF;}
-.boutonrouge:hover { background-color:#991111;}
-.options { font-weight:bold; }
+input:hover, button:hover {
+    color: #fff;
+    background-color: #0d6efd;
+}
 
+input:active, button:active {
+	background-color: #0A58CA;
+	transition: background-color 0s ease-in-out;
+}
+
+button.llbutton { margin-bottom:7px; }
+
+input.boutonrouge {
+	float:right;
+	color:#dc3545;
+	border-color:#dc3545;
+}
+input.boutonrouge:hover {
+	background-color:#dc3545;
+	color: #fff;
+}
+input.boutonrouge:active {
+	background-color:#B02A37;
+	transition: background-color 0s ease-in-out;
+}
+
+.options { margin-left:14mm;font-weight:bold;}
+.optionsGraphique { font-weight:bold; margin-bottom:5px;}
+.opt {margin-right:1.5cm;}
+.optGraph {margin:0px 8px;}
 </style>
 </head>
 <body onload="init()">
@@ -1240,27 +1323,27 @@ Please use a newer version or a different browser.</p>
 <p id="message" style="font-weight: bold"></p>
 
 <p>
-Cet outil permet de créer des courbes sur l'interface graphique ci-dessous en positionnant des points de passage et des tangentes, puis de les exporter en code tikz pour une intégration LaTeX. Le packages suivants sont utilisés: <b><code>tkz-base</code></b> pour créer le repère, <b><code>mathrsfs</code></b> pour les labels sur les courbes, et <b><code>xcolor</code></b> avec l'option <b><code>svgnames</code></b> pour les couleurs.<br>
+Cet outil permet de créer des courbes sur l'interface graphique ci-dessous en positionnant des points de passage et des tangentes, puis de les exporter en code tikz pour une intégration LaTeX. Le package <b><code>tkz-base</code></b> est requis pour créer le repère. <b><code>mathrsfs</code></b> est utilisé pour les labels sur les courbes. <b><code>xcolor</code></b> avec l'option <b><code>svgnames</code></b> est utilisé pour colorer les courbes.<br>
 Pour une utilisation avec Word, un clic droit -> Enregistrer l'image est envisageable. Il est maintenant possible d'exporter les courbes en pdf, grâce à une compilation LaTeX en ligne.<br>
 Des exemples de courbes générées par cet outil sont disponibles <a href="/exemples.pdf">ici</a>.
-En cas de problème, une version plus ancienne est disponible <a href="/index_legacy">ici</a>.
+En cas de problème, une version plus ancienne est disponible <a href="/index_legacy.html">ici</a>.
 <ul>
 <li> Pour insérer ou supprimer un point, il suffit de double-cliquer. </li>
 <li> Les coordonnées sont arrondies au dixième. De plus, appuyer sur <b>Ctrl</b> avant ou pendant le déplacement d'un point permet de le positionner sur la grille, facilitant le placement.</li>
 <li> Le mode intelligent permet d'insérer un nouveau point dans une courbe existante. Il ne fonctionne correctement que si les points de contrôle principaux (noirs) sont classés par abscisses croissantes (utile pour représenter des fonctions f:R -> R). S'il est désactivé, les nouveaux points sont ajoutés après le dernier. </li>
-<li> Appuyer sur <b>Shift (Maj)</b> avant ou pendant le déplacement d'un point de contrôle secondaire permet de le déplacer sur la tangente afin de faire des ajustements fins. <!--(la courbe (R -> R²) n'est plus C1 mais la fonction associée (R -> R) le reste)--> </li>
+<li> Appuyer sur <b>Shift (Maj)</b> avant ou pendant le déplacement d'un point de contrôle secondaire permet de le déplacer sur la tangente, permettant d'ajuster plus finement la courbe. <!--(la courbe (R -> R²) n'est plus C1 mais la fonction associée (R -> R) le reste)--> </li>
 <li> <i>(Déconseillé) On peut déverouiller les points de contrôle pour les ajuster indépendamment, mais la courbe sera alors moins régulière.</i> </li>
 </ul>
 </p>
 
-<p class="options">
-<input type="button" value="Ajouter une courbe" id="swapCubic" onClick="newCubic()" style="float:left;margin-right:0.25cm">
-<input type="checkbox" id="cubicHide"> <label for="cubicHide" style="margin-right:0.25cm">Cacher les contrôles</label>
-<input type="hidden" id="precision"> <label for="precision" style="margin-right:0cm"><!--Mode une décimale--></label>
-<input type="checkbox" id="smartInsertion"> <label for="smartInsertion" style="margin-right:0.25cm">Insertion intelligente</label>
-<input type="checkbox" id="lock"> <label for="lock" style="margin-right:0cm">Verrouiller les paires de points de contrôle</label>
+<p class="optionsGraphique">
+<input type="button" value="Ajouter une courbe" id="swapCubic" onClick="newCubic()">
+<span class="optGraph"><input type="checkbox" id="cubicHide"> <label for="cubicHide">Cacher les contrôles</label></span>
+<span class="optGraph" style="display:none"><input id="precision"> <label for="precision"><!--Mode une décimale--></label></span>
+<span class="optGraph"><input type="checkbox" id="smartInsertion"> <label for="smartInsertion">Insertion intelligente</label></span>
+<span class="optGraph"><input type="checkbox" id="lock"> <label for="lock">Verrouiller les paires de points de contrôle</label></span>
 <input class="boutonrouge" type="button" value="Réinitialiser" id="reset" onClick="if(confirm('Confirmer la réinitialisation?')){resetCubicPoints();}">
-<input class="boutonrouge" type="button" value="Supprimer la courbe" id="reset" onClick="deleteCurve()" style="margin-right:0.2cm;">
+<input class="boutonrouge" type="button" value="Supprimer la courbe" id="reset" onClick="deleteCurve()">
 </p>
 
 <canvas id="cubic" style="display: block; background-color: white; border: thin solid black; width:1200px; height:840px; margin:auto;"></canvas>
@@ -1270,28 +1353,32 @@ En cas de problème, une version plus ancienne est disponible <a href="/index_le
 <h3> Environnement Tikz et repère</h3>
 
 <p class="options">
-<input type="checkbox" id="tikzPreamble"> <label for="tikzPreamble" style="margin-right:1cm">Générer l'environnement tikzpicture entier</label>
-<input type="checkbox" id="tikzCenter"> <label for="tikzCenter" style="margin-right:1cm">Centrer le repère</label>
-<input type="checkbox" id="tikzLabels"> <label for="tikzLabels" style="margin-right:1cm">Graduations</label>
-<input type="checkbox" id="tikzSubGrid"> <label for="tikzSubGrid" style="margin-right:1cm">Sous-grille</label>
-<input type="checkbox" id="tikzPgfplots"> <label for="tikzPgfplots" style="margin-right:1cm">Mode pgfplots (avancé: styles à définir)</label>
+<span class="opt"><input type="checkbox" id="tikzPreamble"> <label for="tikzPreamble">Générer l'environnement tikzpicture entier</label></span>
+<span class="opt"><input type="checkbox" id="tikzCenter"> <label for="tikzCenter">Centrer le repère</label></span>
+<span class="opt"><input type="checkbox" id="tikzPgfplots"> <label for="tikzPgfplots">Mode pgfplots (avancé: styles à définir)</label></span>
+</p>
+
+<p class="options">
+<span class="opt"><input type="checkbox" id="tikzLabels"> <label for="tikzLabels">Graduations</label></span>
+<span class="opt"><input type="checkbox" id="tikzGrid"> <label for="tikzGrid">Grille</label></span>
+<span class="opt"><input type="checkbox" id="tikzSubGrid"> <label for="tikzSubGrid">Sous-grille</label></span>
 </p>
 
 <h3> Propriétés des courbes </h3>
 
 <p class="options">
-<input type="checkbox" id="tikzStartEndPoints"> <label for="tikzStartEndPoints" style="margin-right:1cm">Insérer des points aux extrémités des courbes</label>
-<input type="checkbox" id="tikzCubicLabel"> <label for="tikzCubicLabel" style="margin-right:1cm">Insérer un label sur la dernière portion des courbes</label>
+<span class="opt"><input type="checkbox" id="tikzStartEndPoints"> <label for="tikzStartEndPoints">Insérer des points aux extrémités des courbes</label></span>
+<span class="opt"><input type="checkbox" id="tikzCubicLabel"> <label for="tikzCubicLabel">Insérer un label sur la dernière portion des courbes</label></span>
 </p>
 
 <p class="options">
-<input type="checkbox" id="tikzShowPoints"> <label for="tikzShowPoints" style="margin-right:1cm">Insérer les points de contrôle principaux (noirs)</label>
-<input type="checkbox" id="tikzPointsLabels" disabled=true> <label for="tikzPointsLabels" style="margin-right:1cm">Nommer les points de contrôle principaux</label>
+<span class="opt"><input type="checkbox" id="tikzShowPoints"> <label for="tikzShowPoints">Insérer les points de contrôle principaux (noirs)</label></span>
+<span class="opt"><input type="checkbox" id="tikzPointsLabels" disabled=true> <label for="tikzPointsLabels">Nommer les points de contrôle principaux</label></span>
 </p>
 
 <p class="options">
-<input type="checkbox" id="tikzTangents"> <label for="tikzTangents" style="margin-right:1cm">Afficher les tangentes (non verticales uniquement)</label>
-<input type="checkbox" id="tikzTangentsColors"> <label for="tikzTangentsColors" style="margin-right:1cm">Colorer les courbes</label>
+<span class="opt"><input type="checkbox" id="tikzTangents"> <label for="tikzTangents">Afficher les tangentes (non verticales uniquement)</label></span>
+<span class="opt"><input type="checkbox" id="tikzTangentsColors"> <label for="tikzTangentsColors">Colorer les courbes</label></span>
 </p>
 
 <div class="h">
@@ -1318,7 +1405,7 @@ En cas de problème, une version plus ancienne est disponible <a href="/index_le
 </pre>
 </div>
 
-<p style="font-style=italic; margin-top:1cm;"> v1.7a - Basé sur <a href="https://math.hws.edu/eck/cs424/notes2013/canvas/bezier.html">Bezier Curve Demos</a> - Intégration Tikz et ajout de fonctionnalités par V.Delauney. Licence MIT. Nombre de visites: <span id="visites"></span> </p>
+<p style="font-style=italic; margin-top:1cm;"> v1.7b - Basé sur <a href="https://math.hws.edu/eck/cs424/notes2013/canvas/bezier.html">Bezier Curve Demos</a> - Intégration Tikz et ajout de fonctionnalités par V.Delauney. Licence MIT. Nombre de visites: <span id="visites"></span> </p>
 
 <!--
 v1.0 - Lancement
@@ -1339,6 +1426,7 @@ v1.6b - Compteur de visites
 v1.6c - Points de contrôles nommés, avec placement automatique du label, précision des tangentes à l'import amélioré
 v1.7 - Compilation en ligne
 v1.7a - CSS retravaillé
+v1.7b - Option grille, Améliorations CSS
 
 Idées:
 Fonction autrePointControle(i) if ...
