@@ -1173,7 +1173,7 @@ function generatepreamble(t,e) { // Used in runlatex_mod.js
 <style>
 
 html {
-	background-color: #E3E3E3;
+	background-color: #ececec;
 	font-family:"Source Sans Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 	line-height:1.4;
 	font-size:1rem;
@@ -1208,7 +1208,7 @@ h2 {
 	font-weight:500;
 	line-height:1.2;
     margin-block-start: 0.83em;
-    margin-block-end: 0.83em;
+    margin-block-end: 0.5em;
     margin-inline-start: 0px;
     margin-inline-end: 0px;
 	/* font-weight: bold;
@@ -1223,8 +1223,8 @@ h3 {
 	font-size:1.75rem;
 	font-weight:500;
 	line-height:1.2;
-    margin-block-start: 1em;
-    margin-block-end: 1em;
+    margin-block-start: 0.83em;
+    margin-block-end: 0.5em;
     margin-inline-start: 0px;
     margin-inline-end: 0px;
 	margin-left:7mm;
@@ -1237,7 +1237,8 @@ h3 {
 }
 
 p {
-	text-align:justify
+	text-align:justify;
+	margin-block-start: 0.5em;
 }
 
 li {
@@ -1300,10 +1301,11 @@ input.boutonrouge:active {
 	transition: background-color 0s ease-in-out;
 }
 
-.options { margin-left:14mm;font-weight:bold;}
+.options { display:table;margin-left:14mm;font-weight:bold;}
 .optionsGraphique { font-weight:bold; margin-bottom:5px;}
-.opt {margin-right:1.5cm;}
+.opt {display:table-cell;padding-right:1.5cm;padding-bottom:5px;}
 .optGraph {margin:0px 8px;}
+.ligne {display:table-row;}
 </style>
 </head>
 <body onload="init()">
@@ -1352,34 +1354,38 @@ En cas de problème, une version plus ancienne est disponible <a href="/index_le
 
 <h3> Environnement Tikz et repère</h3>
 
-<p class="options">
+<div class="options">
+<div class="ligne">
 <span class="opt"><input type="checkbox" id="tikzPreamble"> <label for="tikzPreamble">Générer l'environnement tikzpicture entier</label></span>
 <span class="opt"><input type="checkbox" id="tikzCenter"> <label for="tikzCenter">Centrer le repère</label></span>
 <span class="opt"><input type="checkbox" id="tikzPgfplots"> <label for="tikzPgfplots">Mode pgfplots (avancé: styles à définir)</label></span>
-</p>
+</div>
 
-<p class="options">
+<div class="ligne">
 <span class="opt"><input type="checkbox" id="tikzLabels"> <label for="tikzLabels">Graduations</label></span>
 <span class="opt"><input type="checkbox" id="tikzGrid"> <label for="tikzGrid">Grille</label></span>
 <span class="opt"><input type="checkbox" id="tikzSubGrid"> <label for="tikzSubGrid">Sous-grille</label></span>
-</p>
+</div>
+</div>
 
 <h3> Propriétés des courbes </h3>
 
-<p class="options">
+<div class="options">
+<div class="ligne">
 <span class="opt"><input type="checkbox" id="tikzStartEndPoints"> <label for="tikzStartEndPoints">Insérer des points aux extrémités des courbes</label></span>
 <span class="opt"><input type="checkbox" id="tikzCubicLabel"> <label for="tikzCubicLabel">Insérer un label sur la dernière portion des courbes</label></span>
-</p>
+</div>
 
-<p class="options">
+<div class="ligne">
 <span class="opt"><input type="checkbox" id="tikzShowPoints"> <label for="tikzShowPoints">Insérer les points de contrôle principaux (noirs)</label></span>
 <span class="opt"><input type="checkbox" id="tikzPointsLabels" disabled=true> <label for="tikzPointsLabels">Nommer les points de contrôle principaux</label></span>
-</p>
+</div>
 
-<p class="options">
+<div class="ligne">
 <span class="opt"><input type="checkbox" id="tikzTangents"> <label for="tikzTangents">Afficher les tangentes (non verticales uniquement)</label></span>
 <span class="opt"><input type="checkbox" id="tikzTangentsColors"> <label for="tikzTangentsColors">Colorer les courbes</label></span>
-</p>
+</div>
+</div>
 
 <div class="h">
 <pre id="compiler">
@@ -1395,7 +1401,7 @@ En cas de problème, une version plus ancienne est disponible <a href="/index_le
 
 <!--Attention, si la courbe a été finement retouchée (avec Maj), les tangentes seront moins précises.-->
 
-<input type="button" value="Importer la courbe" onClick="importCubic()">
+<input type="button" value="Importer la courbe" onClick="importCubic(); window.scrollTo({ top: 150, behavior: 'smooth' });">
 
 <div class="h">
 <pre id="tikzInput" class="norun">
