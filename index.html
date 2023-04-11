@@ -25,7 +25,7 @@ function websiteVisits(response) {
 <script src="https://api.countapi.xyz/hit/virgil121.github.io/3dcdfe2c-fc27-48e2-926a-0bf6e587aa3a?callback=websiteVisits">
 </script>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.min.js"></script>
+<script src="ace.min.js"></script>
 <script src="runlatex_mod.js"></script>
 <!-- Bezier -->
 <script type="text/javascript">
@@ -756,7 +756,7 @@ function setSnap() {
 	if (draggingCubicOnGrid) {
 		precisionSnap=0.5;
 		invPrecisionSnap=2;
-		pixelSnap=precisionSnap * pixelsUnit;
+		pixelSnap=pixelsUnit / subUnits;
 	}
 	else {
 		precisionSnap=0.1;
@@ -1158,7 +1158,7 @@ function generatepreamble(t,e) { // Used in runlatex_mod.js
 			t = t.replace("\n\\end{center}","");
 		}
 	}
-	var before = "\\documentclass{standalone}\n\\usepackage[svgnames]{xcolor}\n\\usepackage{tikz}\n\\usepackage{tkz-base}\n\\usepackage{mathrsfs}\n"
+	var before = "%!TEX lualatex\n\\documentclass[border=1mm]{standalone}\n\\usepackage[svgnames]{xcolor}\n\\usepackage{tikz}\n\\usepackage{tkz-base}\n\\usepackage{mathrsfs}\n"
 	if ( tikzPgfplotsSelect.checked && tikzPreambleSelect.checked ) {
 		before = before + "\\usepackage{pgfplots}\n\\pgfplotsset{\n\tcompat=1.18,\n\tstyleglobal/.style={\n\t\taxis lines=middle,\n\t\txlabel={$x$},\n\t\tylabel={$y$},\n\t\tlabel style= {font=\\scriptsize},\n\t\tminor x tick num=1,\n\t\tminor y tick num=1,\n\t\txtick distance=1,\n\t\tytick distance=1,\n\t\ttick label style = {font=\\scriptsize},\n\t\tgrid=both,\n\t\tgrid style={densely dashed,line width=0.4pt,draw=black!30},\n\t\tminor grid style={densely dashed,line width=0.25pt,draw=black!20},\n\t},\n\tstyleplot/.style={\n\t\tsamples=201,\n\t\tsmooth,\n\t\tline width=1pt\n\t}\n}\n\\tikzset{\n\tstylepoint/.style={\n\t\tdraw=black,\n\t\tcircle,\n\t\tfill,\n\t\tinner sep=1.2pt,\n\t\tsemithick\n\t}\n}\n";
 		t = t.slice(0,46)+"\ndomain="+xmin.toString()+":"+xmax.toString()+","+t.slice(46)
@@ -1272,7 +1272,7 @@ input[type="button"], button {
     color: #0d6efd;
     border-color: #0d6efd;
 	vertical-align:center;
-	margin:2px 8px;
+	margin:2px 4px;
 }
 
 input:hover, button:hover {
@@ -1302,9 +1302,9 @@ input.boutonrouge:active {
 }
 
 .options { display:table;margin-left:14mm;font-weight:bold;}
-.optionsGraphique { font-weight:bold; margin-bottom:5px;}
+.optionsGraphique { font-weight:bold; margin-bottom:5px; margin-left: 5px; margin-right: 5px;}
 .opt {display:table-cell;padding-right:1.5cm;padding-bottom:5px;}
-.optGraph {margin:0px 8px;}
+.optGraph {margin:0px 6px;}
 .ligne {display:table-row;}
 </style>
 </head>
@@ -1429,7 +1429,7 @@ v1.5f+g - Export amélioré
 v1.6 - Export pgfplots perso
 v1.6a - Meilleure précision des tangentes, mais pas encore à l'import...
 v1.6b - Compteur de visites
-v1.6c - Points de contrôles nommés, avec placement automatique du label, précision des tangentes à l'import amélioré
+v1.6c - Points de contrôles nommés, avec placement automatique du label, précision des tangentes à l'import améliorée
 v1.7 - Compilation en ligne
 v1.7a - CSS retravaillé
 v1.7b - Option grille, Améliorations CSS
@@ -1441,6 +1441,7 @@ Option tangente ou Flèches avec pts de contrôle
 Refaire le css
 Cookies
 couleurs+style spécifiés par l'utilisateur + cookie
+Changer grille
 --!>
 
 </body>
