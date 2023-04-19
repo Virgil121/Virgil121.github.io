@@ -1134,8 +1134,8 @@ function importCubic() {
 		importPoint=importCoords[i].split(",");
 		newX = importPoint[0].slice(1)*1;
 		newY = importPoint[1].slice(0,importPoint[1].length-1)*1;
-		importListOfPoints.push(new Point2D(Math.round(pixelsUnit * newX + cubicCanvasWidth/2),Math.round(-1 * pixelsUnit * newY + cubicCanvasHeight/2)))
-		importListOfPointsPrecise.push(new Point2D(Math.round(pixelsUnit * newX + cubicCanvasWidth/2),Math.round(-1 * pixelsUnit * newY + cubicCanvasHeight/2)))
+		importListOfPoints.push(new Point2D(pixelsUnit * newX + cubicCanvasWidth/2,-1 * pixelsUnit * newY + cubicCanvasHeight/2))
+		importListOfPointsPrecise.push(new Point2D(pixelsUnit * newX + cubicCanvasWidth/2,-1 * pixelsUnit * newY + cubicCanvasHeight/2))
 	}
 	cubicCurves[activeCubicIndex] = importListOfPoints;
 	cubicCurvesPrecise[activeCubicIndex] = importListOfPointsPrecise;
@@ -1432,7 +1432,7 @@ v1.6b - Compteur de visites
 v1.6c - Points de contrôles nommés, avec placement automatique du label, précision des tangentes à l'import améliorée
 v1.7 - Compilation en ligne
 v1.7a - CSS retravaillé
-v1.7b - Option grille, Améliorations CSS
+v1.7b - Option grille, Améliorations CSS, Import amélioré
 
 Idées:
 Fonction autrePointControle(i) if ...
