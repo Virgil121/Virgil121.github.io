@@ -765,9 +765,6 @@ function doCubicMouseMove(evt) {
 		var offsetX = x - cubicPoints[dragPointIndex].x;
 		var offsetY = y - cubicPoints[dragPointIndex].y;
 	}
-	if (offsetX == 0 && offsetY == 0) {
-		return;
-	}
 	// If shiftKey is pressed, move an anchor freely but still aligned with the other anchor and the main point.
 	// Else respect the lock
 	if ( ((draggingCubicSpecial) || (evt.shiftKey )) && ((1 < dragPointIndex && dragPointIndex < cubicPoints.length - 2) && (dragPointIndex % 3 != 0)) ) {
@@ -811,6 +808,9 @@ function doCubicMouseMove(evt) {
 		//}
 	}
 	else {
+		if (offsetX == 0 && offsetY == 0) {
+			return;
+		}
 		// Snap the point to align it with the precision
 		if ( precisionSelect.checked ) {
 			if ( dragPointIndex % 3 == 0 ) {
