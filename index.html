@@ -540,7 +540,7 @@ function printTikzCode() {
 				if ( tikzSubGridSelect.checked ) {
 					res = res + "\\draw[step=0.5,densely dashed,line width=0.25pt,draw=black!20] (\\bezierXmin,\\bezierYmin) grid (\\bezierXmax,\\bezierYmax);\n\t";
 				}
-				res = res + "\\draw[step=1,densely dashed,line width=0.4pt,draw=black!30] (\\bezierXmin,\\bezierYmin) grid (\\bezierXmax,\\bezierYmax);";
+				res = res + "\\draw[step=1,densely dashed,line width=0.4pt,draw=black!30] (\\bezierXmin,\\bezierYmin) grid (\\bezierXmax,\\bezierYmax);\n\t";
 			}
 			// tkz-base initialisation
 			res = res + "%\n\t% Création des axes avec tkz-base\n\t\\tkzInit[xmin=\\bezierXmin,xmax=\\bezierXmax,ymin=\\bezierYmin,ymax=\\bezierYmax]\n\t";
