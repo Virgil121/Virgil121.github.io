@@ -373,6 +373,13 @@ function generateDrawCommands(i) {
 			res = res + " node[pos=0,circle,fill,inner sep=0.8pt] {}";
 		}
 		if (j < l-4) {
+			var p0 = listOfPointsPrecise[j+3];
+			var p1 = listOfPointsPrecise[j+4];
+			var a1 = (convertY(p1.y) - convertY(p0.y));
+			var a2 = (convertX(p1.x) - convertX(p0.x));
+			a1 = Math.round(a1 * 10000) / 10000;
+			a2 = Math.round(a2 * 10000) / 10000;
+			res = res + " % @tgt="+a1.toString()+"/"+a2.toString();
 			res = res + "\n"+space+"\t"+" ".repeat(pointToStr(listOfPoints[0]).length);
 		}
 	}
@@ -1092,7 +1099,9 @@ function importCubic() {
 	var importListOfPoints = [];
 	var importListOfPointsPrecise = [];
 	var importCoords = [];
+	var importPreciseTgt = [];
 	var importPoint = "";
+	var importOnePreciseTgt = "";
 	var newX;
 	var newY;
 	for (var i=0;i<code.length;i++) {
@@ -1105,6 +1114,15 @@ function importCubic() {
 			importPoint += ')';
 			importCoords.push(importPoint);
 		}
+		if (code.slice(i,i+6) == '% @tgt') {
+			importOnePreciseTgt="";
+			i=i+7;
+			while (code[i] != '\n') {
+				importOnePreciseTgt += code[i];
+				i++;
+			}
+			importPreciseTgt.push([importCoords.length-1,importOnePreciseTgt]);
+		}
 	}
 	if ( importCoords.length < 4 ) {
 		return;
@@ -1113,13 +1131,32 @@ function importCubic() {
 		importPoint=importCoords[i].split(",");
 		newX = importPoint[0].slice(1)*1;
 		newY = importPoint[1].slice(0,importPoint[1].length-1)*1;
-		importListOfPoints.push(new Point2D(pixelsUnit * newX + cubicCanvasWidth/2,-1 * pixelsUnit * newY + cubicCanvasHeight/2))
-		importListOfPointsPrecise.push(new Point2D(pixelsUnit * newX + cubicCanvasWidth/2,-1 * pixelsUnit * newY + cubicCanvasHeight/2))
+		importListOfPoints.push(new Point2D(pixelsUnit * newX + cubicCanvasWidth/2,-1 * pixelsUnit * newY + cubicCanvasHeight/2));
+		importListOfPointsPrecise.push(new Point2D(pixelsUnit * newX + cubicCanvasWidth/2,-1 * pixelsUnit * newY + cubicCanvasHeight/2));
+	}
+	// Use the specified tangents to edit the precise list (if specified)
+	for (var i=0;i<importPreciseTgt.length;i++) {
+		var tgtPoint=importPreciseTgt[i][1].split("/");
+			var j = importPreciseTgt[i][0];
+		
+			importPoint=importCoords[j].split(",");
+			
+			newX = importPoint[0].slice(1)*1-tgtPoint[1]*1;
+			newY = importPoint[1].slice(0,importPoint[1].length-1)*1-tgtPoint[0]*1;
+			console.log(newX.toString(),newY.toString());
+			importListOfPointsPrecise[j-1]=new Point2D(pixelsUnit * newX + cubicCanvasWidth/2,-1 * pixelsUnit * newY + cubicCanvasHeight/2);
+			
+			newX = importPoint[0].slice(1)*1+tgtPoint[1]*1;
+			newY = importPoint[1].slice(0,importPoint[1].length-1)*1+tgtPoint[0]*1;
+			console.log(newX.toString(),newY.toString());
+			importListOfPointsPrecise[j+1]=new Point2D(pixelsUnit * newX + cubicCanvasWidth/2,-1 * pixelsUnit * newY + cubicCanvasHeight/2);
+			
 	}
 	cubicCurves[activeCubicIndex] = importListOfPoints;
 	cubicCurvesPrecise[activeCubicIndex] = importListOfPointsPrecise;
 	cubicPoints = cubicCurves[activeCubicIndex];
 	cubicPointsPrecise = cubicCurvesPrecise[activeCubicIndex];
+
 	drawPrint();
 	// snapPoints();
 }
@@ -1412,6 +1449,7 @@ v1.6c - Points de contrôles nommés, avec placement automatique du label, préc
 v1.7 - Compilation en ligne
 v1.7a - CSS retravaillé
 v1.7b - Option grille, Améliorations CSS, Import amélioré
+v1.7c - Import amélioré: Aucune perte de donnée
 
 Idées:
 Fonction autrePointControle(i) if ...
