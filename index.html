@@ -1350,7 +1350,7 @@ En cas de problème, une version plus ancienne est disponible <a href="/index_le
 <li> Les coordonnées sont arrondies au dixième. De plus, appuyer sur <b>Ctrl</b> avant ou pendant le déplacement d'un point permet de le positionner sur la grille, facilitant le placement.</li>
 <li> Le mode intelligent permet d'insérer un nouveau point dans une courbe existante. Il ne fonctionne correctement que si les points de contrôle principaux (noirs) sont classés par abscisses croissantes (utile pour représenter des fonctions f:R -> R). S'il est désactivé, les nouveaux points sont ajoutés après le dernier. </li>
 <li> Appuyer sur <b>Shift (Maj)</b> avant ou pendant le déplacement d'un point de contrôle secondaire permet de le déplacer sur la tangente, permettant d'ajuster plus finement la courbe. <!--(la courbe (R -> R²) n'est plus C1 mais la fonction associée (R -> R) le reste)--> </li>
-<li> <i>(Déconseillé) On peut déverouiller les points de contrôle pour les ajuster indépendamment, mais la courbe sera alors moins régulière.</i> </li>
+<li> <i>(Déconseillé) On peut déverouiller les points de contrôle pour les ajuster indépendamment, mais la courbe sera alors moins régulière, et l'export tikz des (double) tangentes n'est pas pris en charge dans cette version.</i> </li>
 </ul>
 </p>
 
@@ -1415,8 +1415,6 @@ En cas de problème, une version plus ancienne est disponible <a href="/index_le
 
 <p> Entrez le code Tikz d'une courbe de Bezier dans la zone ci-dessous (Le bloc <code>\draw ...</code> uniquement et sans parenthèses autres que les coordonnées). La courbe active sera alors remplacée par la votre.</p>
 
-<!--Attention, si la courbe a été finement retouchée (avec Maj), les tangentes seront moins précises.-->
-
 <input type="button" value="Importer la courbe" onClick="importCubic(); window.scrollTo({ top: 150, behavior: 'smooth' });">
 
 <div class="h">
@@ -1450,15 +1448,6 @@ v1.7 - Compilation en ligne
 v1.7a - CSS retravaillé
 v1.7b - Option grille, Améliorations CSS, Import amélioré
 v1.7c - Import amélioré: Aucune perte de donnée
-
-Idées:
-Fonction autrePointControle(i) if ...
-Désactiver grille principale et Option pointillés vers points de contrôle
-Option tangente ou Flèches avec pts de contrôle
-Refaire le css
-Cookies
-couleurs+style spécifiés par l'utilisateur + cookie
-Changer grille
 --!>
 
 </body>
